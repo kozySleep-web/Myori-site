@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misty Archive | Official Character Database</title>
+    <title>Misty Archive | Official</title>
     <style>
-        /* CSS VARIABLES FOR PROFESSIONAL COLORS */
+        /* COZY DESIGN SYSTEM */
         :root {
-            --gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.1);
-            --dark-glass: rgba(0, 0, 0, 0.7);
-            --bg-dark: #0b0e11;
+            --blush: #f8bbd0;
+            --cream: #fffdf0;
+            --text-soft: #5d4037;
+            --glass-soft: rgba(255, 255, 255, 0.3);
+            --accent: #e0d5c1;
         }
 
         body, html { 
             margin: 0; padding: 0; 
             font-family: 'Georgia', serif; 
-            background: black; 
-            color: white; 
+            background: var(--cream); 
+            color: var(--text-soft); 
             height: 100%; 
             overflow: hidden; 
         }
 
-        /* 1. LOADING SCREEN (SHIGURE UI) */
+        /* 1. SHIGURE UI LOADING SCREEN */
         #loader {
             position: fixed; width: 100%; height: 100%;
             background: white; z-index: 9999;
@@ -31,58 +32,67 @@
             transition: opacity 0.6s ease;
         }
         .loader-gif { width: 180px; height: auto; }
-        .loader-text { margin-top: 15px; color: #333; letter-spacing: 4px; font-size: 12px; font-weight: bold; animation: pulse 1.5s infinite; }
+        .loader-text { margin-top: 15px; color: #555; letter-spacing: 4px; font-size: 11px; font-weight: bold; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         /* 2. NAVIGATION SYSTEM */
         .view { display: none; width: 100vw; height: 100vh; position: relative; }
         .active { display: flex !important; flex-direction: column; }
 
-        /* 3. WELCOME SCREEN */
-        #welcome { 
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
-                        url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJtYnJreXQ0ZWp6ZWp6ZWp6ZWp6ZWp6ZWp6ZWp6ZWp6ZWp6ZWp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpxxXLyK3Zte/giphy.gif');
-            background-size: cover; background-position: center;
-            justify-content: center; align-items: center;
-        }
-        .glass-panel {
-            background: var(--glass); backdrop-filter: blur(12px);
-            padding: 60px; border: 1px solid rgba(212, 175, 55, 0.3);
-            text-align: center; z-index: 5;
-        }
-        h1 { font-size: 3rem; letter-spacing: 12px; margin: 0; text-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .btn-enter { 
-            margin-top: 30px; padding: 15px 45px; 
-            background: var(--gold); border: none; color: black;
-            font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
-        }
-        .btn-enter:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--gold); }
+        /* 3. ATMOSPHERIC WELCOME SCREEN */
+        #welcome { justify-content: center; align-items: center; overflow: hidden; }
 
-        /* 4. CATEGORY SCREEN (BENTO GRID) */
-        #categories { background: var(--bg-dark); justify-content: center; align-items: center; }
+        .welcome-bg-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* YOUR CHERRY BLOSSOM BACKGROUND */
+            background-image: url('https://i.ibb.co/wCxD13p/image-7.png');
+            background-size: cover; background-position: center;
+            filter: blur(12px) brightness(0.85);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+        .glass-panel {
+            background: var(--glass-soft); backdrop-filter: blur(8px);
+            padding: 50px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.4);
+            text-align: center; z-index: 5; box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        h1 { font-size: 2.5rem; letter-spacing: 8px; margin: 0; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+        .subtitle { color: white; letter-spacing: 3px; font-size: 0.9rem; margin-top: 5px; opacity: 0.9; }
+
+        .btn-enter { 
+            margin-top: 35px; padding: 18px 55px; 
+            background: var(--cream); border: none; color: var(--text-soft);
+            font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.4s;
+        }
+        .btn-enter:hover { background: var(--blush); color: white; transform: translateY(-3px); }
+
+        /* 4. BENTO CATEGORY SCREEN */
+        #categories { background: var(--cream); justify-content: center; align-items: center; }
         .bento-grid { 
             display: grid; grid-template-columns: 1fr 1fr; 
-            gap: 15px; width: 90%; max-width: 450px; 
+            gap: 15px; width: 90%; max-width: 400px; 
         }
         .bento-item { 
-            background: var(--dark-glass); border: 1px solid var(--gold);
-            height: 140px; display: flex; flex-direction: column;
+            background: white; border: 1px solid var(--accent);
+            height: 130px; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer; transition: 0.4s;
         }
-        .bento-item:hover { background: var(--gold); color: black; }
-        .bento-item b { font-size: 1.2rem; letter-spacing: 2px; }
+        .bento-item:hover { background: var(--blush); color: white; border-color: var(--blush); }
+        .bento-item b { font-size: 1.1rem; letter-spacing: 2px; }
 
         /* 5. CHARACTER VIEWER (TSUIHOSHA STYLE) */
-        #viewer { background: #fdf5e6; color: black; }
-        .top-nav { display: flex; overflow-x: auto; padding: 15px; background: white; border-bottom: 2px solid var(--gold); }
-        .thumb { min-width: 65px; height: 65px; border: 2px solid #ddd; margin-right: 12px; cursor: pointer; object-fit: cover; }
+        #viewer { background: var(--cream); }
+        .top-nav { display: flex; overflow-x: auto; padding: 15px; background: white; border-bottom: 2px solid var(--accent); }
+        .thumb { min-width: 60px; height: 60px; border: 1px solid #eee; margin-right: 12px; cursor: pointer; object-fit: cover; }
         .stage { flex-grow: 1; position: relative; background-size: cover; background-position: center; overflow: hidden; }
-        .main-char { position: absolute; left: -5%; bottom: 0; height: 92%; transition: 0.5s; filter: drop-shadow(10px 0 20px rgba(0,0,0,0.3)); }
+        .main-char { position: absolute; left: -5%; bottom: 0; height: 90%; transition: 0.5s; filter: drop-shadow(10px 0 20px rgba(0,0,0,0.1)); }
         .profile-card { 
-            position: absolute; right: 5%; bottom: 8%; width: 270px; 
+            position: absolute; right: 5%; bottom: 8%; width: 260px; 
             background: white; padding: 30px; 
-            border-top: 10px solid var(--gold); box-shadow: 15px 15px 0px var(--dark-glass);
+            border-top: 10px solid var(--blush); box-shadow: 15px 15px 0px rgba(93, 64, 55, 0.05);
         }
     </style>
 </head>
@@ -90,28 +100,29 @@
 
     <div id="loader">
         <img src="https://media.tenor.com/shigure-ui-dance-ui-mama.gif" class="loader-gif">
-        <div class="loader-text">INITIALIZING ARCHIVE...</div>
+        <div class="loader-text">SYNCHRONIZING ARCHIVE...</div>
     </div>
 
     <div id="main-content" style="visibility: hidden;">
         
         <div id="welcome" class="view active">
+            <div class="welcome-bg-image"></div>
             <div class="glass-panel">
                 <h1>MISTY ARCHIVE</h1>
-                <p style="color: var(--gold); letter-spacing: 3px;">DATABASE VERSION 1.0.4</p>
-                <button class="btn-enter" onclick="nav('categories')">ACCESS DATA</button>
+                <div class="subtitle">A COZY COLLECTION OF LEGENDS</div>
+                <button class="btn-enter" onclick="nav('categories')">BEGIN JOURNEY</button>
             </div>
         </div>
 
         <div id="categories" class="view">
-            <h2 style="color: var(--gold); letter-spacing: 6px; margin-bottom: 30px;">CLASSIFICATION</h2>
+            <h2 style="letter-spacing: 5px; margin-bottom: 30px;">CLASSIFICATION</h2>
             <div class="bento-grid">
                 <div class="bento-item" onclick="nav('viewer')"><b>HUMAN</b></div>
                 <div class="bento-item" onclick="nav('viewer')"><b>ELF</b></div>
                 <div class="bento-item" onclick="nav('viewer')"><b>MALE</b></div>
                 <div class="bento-item" onclick="nav('viewer')"><b>FEMALE</b></div>
             </div>
-            <p onclick="nav('welcome')" style="margin-top: 30px; color: var(--gold); cursor: pointer;">[ LOGOUT ]</p>
+            <p onclick="nav('welcome')" style="margin-top: 30px; cursor: pointer; font-size: 0.8rem; opacity: 0.6;">[ RETURN TO START ]</p>
         </div>
 
         <div id="viewer" class="view">
@@ -119,12 +130,12 @@
                 <img src="https://placehold.co/100x100/f8bbd0/white?text=L" class="thumb" onclick="setChar('Lina')">
                 <img src="https://placehold.co/100x100/bbdefb/black?text=A" class="thumb" onclick="setChar('Atelier')">
             </div>
-            <div class="stage" style="background-image: url('https://placehold.co/1200x800/eee/666?text=Misty+Forest');">
+            <div class="stage" style="background-image: url('https://placehold.co/1200x800/eee/666?text=Misty+Background');">
                 <img id="char-img" src="" class="main-char">
                 <div class="profile-card">
-                    <h2 id="char-name" style="margin:0; text-transform:uppercase;">Select Entry</h2>
-                    <p id="char-desc" style="line-height:1.6; font-size: 14px; color:#444;">Please select a character from the archive above.</p>
-                    <button onclick="nav('categories')" style="border:none; background:none; color:var(--gold); font-weight:bold; cursor:pointer; padding:0;">[ BACK ]</button>
+                    <h2 id="char-name" style="margin:0; text-transform:uppercase;">Entry Name</h2>
+                    <p id="char-desc" style="line-height:1.6; font-size: 14px; color:var(--text-soft);">Awaiting selection from the archive above.</p>
+                    <button onclick="nav('categories')" style="border:none; background:none; color:var(--blush); font-weight:bold; cursor:pointer; padding:0;">[ BACK ]</button>
                 </div>
             </div>
         </div>
@@ -132,33 +143,9 @@
     </div>
 
     <script>
-        // HANDLE LOADING
+        // LOADING SCREEN LOGIC
         window.addEventListener('load', function() {
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('main-content').style.visibility = 'visible';
-                setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600);
-            }, 2000); // Shows Shigure dance for 2 seconds
-        });
-
-        // NAVIGATION
-        function nav(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // CHARACTER DATA
-        const characters = {
-            'Lina': { name: 'Lina', desc: 'An 8-year-old traveler of the misty hills. She carries a lantern to guide the way.', img: 'https://placehold.co/500x800/f8bbd0/white?text=Lina+Pose' },
-            'Atelier': { name: 'Atelier', desc: 'A mysterious girl from the outer borders. She has a deep connection to the forest spirits.', img: 'https://placehold.co/500x800/bbdefb/black?text=Atelier+Pose' }
-        };
-
-        function setChar(key) {
-            const c = characters[key];
-            document.getElementById('char-name').innerText = c.name;
-            document.getElementById('char-desc').innerText = c.desc;
-            document.getElementById('char-img').src = c.img;
-        }
-    </script>
-</body>
-</html>
+                setTimeout(() => { document.getElementById('loader').style.display =
