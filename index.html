@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Misty Archive | Official v1.0</title>
+    <title>Misty Archive | The Holy Grail</title>
     <style>
         :root {
             --blush: #f8bbd0;
@@ -13,109 +13,120 @@
             --accent: #d7ccc8;
             --glass: rgba(255, 255, 255, 0.85);
             --sidebar-w: 280px;
-            --shadow: 0 8px 30px rgba(0,0,0,0.12);
+            --shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        /* RESET & SMOOTHING */
+        /* CORE UI */
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--cream); color: var(--text-dark); height: 100%; overflow: hidden; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--text-dark); height: 100%; overflow: hidden; }
         
-        .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.4s ease; }
+        .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
         .view.active { display: flex !important; opacity: 1; }
 
-        /* LOADER (Optimized) */
+        /* LOADING: HOLY GRAIL ANIMATION */
         #loader { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
         }
-        .loader-gif { width: 45vw; max-width: 260px; height: auto; }
+        .loader-gif { width: 50vw; max-width: 280px; height: auto; }
+        .holy-text { 
+            margin-top: 20px; letter-spacing: 6px; font-size: 12px; color: var(--accent);
+            animation: pulse 2s infinite; font-weight: bold;
+        }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
 
-        /* SIDEBAR & NAVIGATION */
+        /* SIDEBAR MENU */
         #sidebar {
             position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%;
-            background: #fff; z-index: 2000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow); padding: env(safe-area-inset-top) 20px 20px;
+            background: #fff; z-index: 2000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow); padding: 40px 20px;
         }
         #sidebar.open { transform: translateX(var(--sidebar-w)); }
-        .sidebar-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
-            z-index: 1500; display: none; backdrop-filter: blur(4px); 
-        }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1500; display: none; backdrop-filter: blur(4px); }
 
         .nav-header { display: flex; align-items: center; background: #fff; height: 64px; padding: 0 16px; border-bottom: 1px solid var(--accent); z-index: 100; }
-        .icon-btn { cursor: pointer; font-size: 24px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
-        .icon-btn:active { background: rgba(0,0,0,0.05); }
+        .icon-btn { cursor: pointer; font-size: 24px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
-        /* BENTO GRID (The UI Heart) */
+        /* BENTO BOXES (Race Selection) */
         .content-scroll { padding: 24px 16px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; width: 100%; max-width: 800px; }
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; width: 100%; max-width: 900px; }
         .bento-card { 
-            height: 180px; border-radius: 20px; overflow: hidden; position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s;
-            border: 1px solid rgba(0,0,0,0.05); background: #eee center/cover;
+            height: 200px; border-radius: 15px; overflow: hidden; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s;
+            border: 2px solid #fff; background: #eee center/cover no-repeat;
         }
-        .bento-card:active { transform: scale(0.96); }
-        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 600; font-size: 13px; letter-spacing: 1px; backdrop-filter: blur(5px); }
+        .bento-card:active { transform: scale(0.95); }
+        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; font-size: 14px; letter-spacing: 2px; }
 
         /* CHARACTER VIEWER STAGE */
-        .stage { flex-grow: 1; position: relative; background: radial-gradient(circle at center, #fff 0%, #f3f3f3 100%); overflow: hidden; display: flex; flex-direction: column; }
-        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 90%; transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .stage { flex-grow: 1; position: relative; background: #fdfdfd; overflow: hidden; display: flex; flex-direction: column; }
+        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
 
         /* REFINED BOTTOM SHEET */
         .bottom-sheet {
-            background: #fff; border-radius: 32px 32px 0 0; padding: 28px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1); z-index: 500;
-            max-height: 42%; overflow-y: auto; border-top: 6px solid var(--blush);
+            background: #fff; border-radius: 30px 30px 0 0; padding: 30px;
+            box-shadow: 0 -15px 45px rgba(0,0,0,0.1); z-index: 500;
+            max-height: 45%; overflow-y: auto; border-top: 5px solid var(--blush);
         }
 
-        /* WELCOME */
-        .hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.65); }
-        .hero-card { position: relative; z-index: 10; text-align: center; color: #fff; }
-        .btn-pill { background: #fff; border: none; padding: 16px 48px; border-radius: 50px; font-weight: 700; letter-spacing: 2px; color: var(--text-dark); box-shadow: var(--shadow); }
+        /* WELCOME SCREEN DESIGN */
+        .welcome-hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.6); }
+        .welcome-box-gif { 
+            position: relative; z-index: 10; width: 85%; max-width: 400px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+            padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
+            text-align: center; box-shadow: var(--shadow);
+        }
+        .gif-container { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 2px solid #fff; }
 
-        /* TYPOGRAPHY */
-        h1 { font-size: 2.2rem; letter-spacing: 8px; margin-bottom: 24px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .char-name { font-size: 24px; font-weight: 800; margin: 0; color: var(--text-dark); }
-        .char-cv { font-size: 12px; font-weight: 700; color: var(--blush); text-transform: uppercase; letter-spacing: 1px; margin: 6px 0 12px; }
-        .char-desc { font-size: 15px; line-height: 1.7; color: var(--text-mid); }
+        .btn-enter { background: #fff; border: none; padding: 15px 45px; border-radius: 50px; font-weight: 800; letter-spacing: 3px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMenu()"></div>
     <div id="sidebar">
-        <h2 style="letter-spacing: 2px; color: var(--blush);">MISTY MENU</h2>
-        <div style="height: 2px; background: var(--cream); margin: 20px 0;"></div>
-        <div class="icon-btn" onclick="nav('welcome'); closeMenu()" style="width: 100%; justify-content: flex-start; border-radius: 8px;">🏠 Home</div>
-        <div class="icon-btn" onclick="nav('race-select'); closeMenu()" style="width: 100%; justify-content: flex-start; border-radius: 8px;">👤 Character Archive</div>
+        <h2 style="letter-spacing: 4px; color: var(--blush); margin-bottom: 40px;">ARCHIVE</h2>
+        <div onclick="nav('welcome'); closeMenu()" style="padding:15px 0; border-bottom:1px solid #eee; cursor:pointer;">🏠 Home</div>
+        <div onclick="nav('race-select'); closeMenu()" style="padding:15px 0; border-bottom:1px solid #eee; cursor:pointer;">👤 Race Database</div>
     </div>
 
     <div id="loader">
         <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" class="loader-gif">
+        <div class="holy-text">OPENING THE HOLY GRAIL</div>
     </div>
 
     <div id="app" style="visibility: hidden;">
         
         <div id="welcome" class="view active" style="justify-content: center; align-items: center;">
-            <div class="hero"></div>
-            <div class="hero-card">
-                <h1>MISTY<br>ARCHIVE</h1>
-                <button class="btn-pill" onclick="nav('race-select')">EXPLORE</button>
+            <div class="welcome-hero"></div>
+            <div class="welcome-box-gif">
+                <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" class="gif-container">
+                <h1 style="color:#fff; letter-spacing: 6px; font-size: 1.5rem; margin-bottom: 20px;">MISTY ARCHIVE</h1>
+                <button class="btn-enter" onclick="nav('race-select')">ENTER</button>
             </div>
         </div>
 
         <div id="race-select" class="view">
             <div class="nav-header">
                 <div class="icon-btn" onclick="openMenu()">☰</div>
-                <div style="flex-grow: 1; text-align: center; font-weight: 700; letter-spacing: 1px;">DATABASE</div>
-                <div style="width: 48px;"></div>
+                <div style="flex-grow:1; text-align:center; font-weight:800; letter-spacing:2px;">SELECT RACE</div>
+                <div style="width:44px;"></div>
             </div>
             <div class="content-scroll">
                 <div class="bento-grid">
-                    <div class="bento-card" style="background-image:url('PASTE_HUMAN_IMG_LINK')" onclick="selectRace('human')"><div class="bento-label">HUMAN</div></div>
-                    <div class="bento-card" style="background-image:url('PASTE_ELF_IMG_LINK')" onclick="selectRace('elf')"><div class="bento-label">ELF</div></div>
-                    <div class="bento-card" style="background-image:url('PASTE_BEASTMEN_IMG_LINK')" onclick="selectRace('beastmen')"><div class="bento-label">BEASTMEN</div></div>
-                    <div class="bento-card" style="background-image:url('PASTE_VAMPIRE_IMG_LINK')" onclick="selectRace('vampire')"><div class="bento-label">VAMPIRE</div></div>
+                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')">
+                        <div class="bento-label">HUMAN</div>
+                    </div>
+                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')">
+                        <div class="bento-label">ELF</div>
+                    </div>
+                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')">
+                        <div class="bento-label">BEASTMEN</div>
+                    </div>
+                    <div class="bento-card" style="background-color:#222;" onclick="selectRace('vampire')">
+                        <div class="bento-label">VAMPIRE</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,14 +134,19 @@
         <div id="viewer" class="view">
             <div class="nav-header">
                 <div class="icon-btn" onclick="window.history.back()">←</div>
-                <div id="thumb-bar" style="display: flex; overflow-x: auto; gap: 12px; padding: 0 10px;"></div>
+                <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:15px; padding:0 10px; align-items:center;"></div>
             </div>
             <div class="stage">
                 <img id="char-img" src="" class="main-char">
                 <div class="bottom-sheet">
-                    <h2 class="char-name" id="char-name">Misty Entry</h2>
-                    <p class="char-cv" id="char-cv">CV: Unknown</p>
-                    <div class="char-desc" id="char-desc">Select a portrait from the top bar to view the archive entry.</div>
+                    <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                        <img id="minor-icon" src="" style="width:50px; height:50px; border-radius:10px; border:2px solid var(--blush); display:none;">
+                        <div>
+                            <h2 id="char-name" style="margin:0; font-size:24px;">-</h2>
+                            <p id="char-cv" style="font-size:11px; color:var(--blush); margin:0; font-weight:bold; letter-spacing:1px;"></p>
+                        </div>
+                    </div>
+                    <div id="char-desc" style="font-size:15px; line-height:1.7; color:var(--text-mid);">Select an entry.</div>
                 </div>
             </div>
         </div>
@@ -139,15 +155,12 @@
     <script>
         let currentRace = "";
 
-        // UI CORE
-        function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display = 'block'; }
-        function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display = 'none'; }
+        function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display='block'; }
+        function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display='none'; }
 
         function nav(id, addHistory = true) {
-            const views = document.querySelectorAll('.view');
-            views.forEach(v => v.classList.remove('active'));
-            const target = document.getElementById(id);
-            target.classList.add('active');
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             if(addHistory) history.pushState({ screenId: id }, "", "");
         }
 
@@ -156,21 +169,17 @@
             else nav('welcome', false);
         };
 
-        // ARCHIVE LOGIC
-        function selectRace(race) {
-            currentRace = race;
-            renderIcons();
-            nav('viewer');
-        }
+        function selectRace(race) { currentRace = race; renderIcons(); nav('viewer'); }
 
         const characters = [
             {
                 race: 'human',
                 name: 'Atelier',
                 cv: 'Marika Tachibana',
-                desc: 'A kind-hearted girl working as the poster girl for a diner in the misty hills of Ghoom. She loves the foggy mornings and warm tea.',
-                main: 'https://tsuihosha-shokudo.com/assets/img/chara/atelier/img_chara_stand02.png',
-                icon: 'https://i.postimg.cc/C1z8g7z4/Atelier-Icon1.png' // 🟢 Replace with your GitHub Raw link later!
+                desc: 'A gentle-hearted human girl from the misty Ghoom hills. She handles the diner with a warm smile even on the foggiest days.',
+                main: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
+                icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png',
+                minor: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-minor.png'
             }
         ];
 
@@ -186,20 +195,20 @@
                     document.getElementById('char-cv').innerText = "CV: " + c.cv;
                     document.getElementById('char-desc').innerText = c.desc;
                     document.getElementById('char-img').src = c.main;
-                    document.getElementById('char-img').style.opacity = '1';
+                    const minor = document.getElementById('minor-icon');
+                    minor.src = c.minor; minor.style.display = 'block';
                 };
                 bar.appendChild(img);
             });
         }
 
-        // INIT
         window.addEventListener('load', () => {
             history.replaceState({ screenId: 'welcome' }, "", "");
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('app').style.visibility = 'visible';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 600);
-            }, 2500);
+                setTimeout(() => document.getElementById('loader').style.display='none', 600);
+            }, 3000); // 3 seconds for Shigure's dance
         });
     </script>
 </body>
