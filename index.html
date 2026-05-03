@@ -124,7 +124,7 @@
                     <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')">
                         <div class="bento-label">BEASTMEN</div>
                     </div>
-                    <div class="bento-card" style="background-color:#222;" onclick="selectRace('vampire')">
+                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg')" onclick="selectRace('vampire')">
                         <div class="bento-label">VAMPIRE</div>
                     </div>
                 </div>
@@ -180,6 +180,15 @@
                 main: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
                 icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png',
                 minor: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-minor.png'
+            },
+            {
+                race: 'vampire',
+                name: 'Archive Secret',
+                cv: 'Restricted',
+                desc: 'The data for this vampire inhabitant is still being decrypted. Expect a dark silhouette in the mist soon...',
+                main: '', 
+                icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif',
+                minor: ''
             }
         ];
 
@@ -196,7 +205,8 @@
                     document.getElementById('char-desc').innerText = c.desc;
                     document.getElementById('char-img').src = c.main;
                     const minor = document.getElementById('minor-icon');
-                    minor.src = c.minor; minor.style.display = 'block';
+                    if(c.minor) { minor.src = c.minor; minor.style.display = 'block'; }
+                    else { minor.style.display = 'none'; }
                 };
                 bar.appendChild(img);
             });
@@ -208,7 +218,7 @@
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('app').style.visibility = 'visible';
                 setTimeout(() => document.getElementById('loader').style.display='none', 600);
-            }, 3000); // 3 seconds for Shigure's dance
+            }, 3000);
         });
     </script>
 </body>
