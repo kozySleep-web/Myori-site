@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misty Archive | filtered</title>
+    <title>Misty Archive | Final</title>
     <style>
         :root {
             --blush: #f8bbd0;
@@ -20,23 +20,26 @@
         /* LOADER */
         #loader { position: fixed; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s ease; }
         
-        /* WELCOME */
+        /* WELCOME (With your Cherry Blossom BG) */
         #welcome { justify-content: center; align-items: center; }
-        .welcome-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://i.ibb.co/wCxD13p/image-7.png') center/cover; filter: blur(10px) brightness(0.9); transform: scale(1.1); z-index: 0; }
+        .welcome-bg { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: url('https://i.ibb.co/wCxD13p/image-7.png') center/cover; 
+            filter: blur(12px) brightness(0.9); transform: scale(1.1); z-index: 0; 
+        }
         .glass-panel { background: var(--glass-soft); backdrop-filter: blur(10px); padding: 40px; border: 1px solid white; text-align: center; z-index: 5; }
 
-        /* BENTO CATEGORIES */
+        /* CATEGORIES */
         .screen-bg { background: var(--cream); justify-content: center; align-items: center; }
         .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
-        .bento-item { background: white; border: 1px solid var(--accent); height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-        .bento-item:hover { background: var(--blush); color: white; border-color: var(--blush); }
+        .bento-item { background: white; border: 1px solid var(--accent); height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; }
+        .bento-item:hover { background: var(--blush); color: white; }
 
-        /* VIEWER */
+        /* VIEWER (Atelier Section) */
         .top-nav { display: flex; overflow-x: auto; padding: 15px; background: white; border-bottom: 2px solid var(--accent); min-height: 80px; }
-        .thumb { min-width: 65px; height: 65px; border: 2px solid #eee; margin-right: 12px; cursor: pointer; border-radius: 50%; object-fit: cover; display: none; } /* Hidden by default */
-        .stage { flex-grow: 1; position: relative; background: url('https://placehold.co/1200x800/fdf5e6/5d4037?text=Diner+Interior') center/cover; overflow: hidden; }
-        .main-char { position: absolute; left: -10%; bottom: 0; height: 95%; filter: drop-shadow(10px 0 20px rgba(0,0,0,0.1)); opacity: 0; transition: 0.5s; }
-        
+        .thumb { min-width: 65px; height: 65px; border: 2px solid #eee; margin-right: 12px; cursor: pointer; border-radius: 50%; object-fit: cover; }
+        .stage { flex-grow: 1; position: relative; background: #fdf5e6; overflow: hidden; }
+        .main-char { position: absolute; left: -10%; bottom: 0; height: 95%; filter: drop-shadow(10px 0 20px rgba(0,0,0,0.1)); transition: 0.5s; }
         .profile-card { position: absolute; right: 5%; bottom: 5%; width: 280px; background: white; padding: 25px; border-top: 10px solid var(--blush); box-shadow: 15px 15px 0px rgba(93, 64, 55, 0.05); }
         .exp-icons { display: flex; gap: 10px; margin-top: 15px; }
         .exp-img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--accent); }
@@ -46,7 +49,7 @@
 
     <div id="loader">
         <img src="https://media.tenor.com/shigure-ui-dance-ui-mama.gif" style="width:180px;">
-        <div style="margin-top:10px; letter-spacing:3px; font-size:12px;">FILTERING ARCHIVE...</div>
+        <div style="margin-top:10px; letter-spacing:3px; font-size:12px;">LOADING ARCHIVE...</div>
     </div>
 
     <div id="main-content" style="visibility: hidden;">
@@ -75,37 +78,30 @@
                 <div class="bento-item" onclick="selectGender('male')">MALE</div>
                 <div class="bento-item" onclick="selectGender('female')">FEMALE</div>
             </div>
-            <button onclick="nav('race-select')" style="margin-top:20px; background:none; border:none; cursor:pointer; color:var(--blush);">[ BACK TO RACES ]</button>
         </div>
 
         <div id="viewer" class="view">
-            <div class="top-nav" id="thumbnail-list">
-                </div>
+            <div class="top-nav" id="thumbnail-list"></div>
             <div class="stage">
                 <img id="char-img" src="" class="main-char">
                 <div class="profile-card">
-                    <h2 id="char-name" style="margin:0;">Select Character</h2>
+                    <h2 id="char-name">Select Character</h2>
                     <p id="char-cv" style="font-size:12px; color:var(--blush); margin:5px 0;"></p>
-                    <p id="char-desc" style="font-size:14px; line-height:1.5;">Please select an entry from the filtered list.</p>
-                    
+                    <p id="char-desc" style="font-size:14px; line-height:1.5;"></p>
                     <div class="exp-icons" id="expressions" style="display:none;">
                         <img id="exp1" src="" class="exp-img">
                         <img id="exp2" src="" class="exp-img">
                     </div>
-
-                    <button onclick="nav('gender-select')" style="border:none; background:none; color:var(--blush); font-weight:bold; cursor:pointer; margin-top:15px; padding:0;">[ BACK ]</button>
+                    <button onclick="nav('gender-select')" style="border:none; background:none; color:var(--blush); font-weight:bold; cursor:pointer; margin-top:15px;">[ BACK ]</button>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // GLOBAL STATE
         let selectedRace = "";
         let selectedGender = "";
 
-        // DATA
         const chars = [
             {
                 id: 'Atelier',
@@ -113,16 +109,14 @@
                 gender: 'female',
                 name: 'Atelier',
                 cv: 'Marika Tachibana',
-                desc: 'A young girl rescued by Dennis from slavery. She is the quiet but kind-hearted poster girl of his diner.',
-                main: 'https://i.ibb.co/L9Y00tD/Atelier-Full.png',
-                icon: 'https://i.ibb.co/6y4tWv6/Atelier-Icon1.png',
-                exp1: 'https://i.ibb.co/6y4tWv6/Atelier-Icon1.png',
-                exp2: 'https://i.ibb.co/tZ5WjCH/Atelier-Icon2.png'
+                desc: 'A young girl rescued from slavery. She is the quiet but kind-hearted poster girl of Dennis’s diner.',
+                main: 'https://i.postimg.cc/85zM6yS0/Atelier-Full.png',
+                icon: 'https://i.postimg.cc/C1z8g7z4/Atelier-Icon1.png',
+                exp1: 'https://i.postimg.cc/C1z8g7z4/Atelier-Icon1.png',
+                exp2: 'https://i.postimg.cc/mD7m5P0X/Atelier-Icon2.png'
             }
-            // You can add 50+ characters here!
         ];
 
-        // NAVIGATION & FILTERING
         function nav(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -130,7 +124,6 @@
 
         function selectRace(race) {
             selectedRace = race;
-            document.getElementById('gender-title').innerText = race.toUpperCase() + " / GENDER";
             nav('gender-select');
         }
 
@@ -142,20 +135,12 @@
 
         function renderIcons() {
             const list = document.getElementById('thumbnail-list');
-            list.innerHTML = ""; // Clear old icons
-            
-            // Filter characters based on selection
+            list.innerHTML = "";
             const filtered = chars.filter(c => c.race === selectedRace && c.gender === selectedGender);
-            
-            if (filtered.length === 0) {
-                list.innerHTML = "<p style='padding:15px; font-size:12px; opacity:0.5;'>No entries found for this category...</p>";
-            }
-
             filtered.forEach(c => {
                 const img = document.createElement('img');
                 img.src = c.icon;
                 img.className = 'thumb';
-                img.style.display = 'block';
                 img.onclick = () => setChar(c);
                 list.appendChild(img);
             });
@@ -167,7 +152,6 @@
             document.getElementById('char-desc').innerText = c.desc;
             document.getElementById('char-img').src = c.main;
             document.getElementById('char-img').style.opacity = '1';
-            
             document.getElementById('expressions').style.display = 'flex';
             document.getElementById('exp1').src = c.exp1;
             document.getElementById('exp2').src = c.exp2;
