@@ -3,81 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misty Archive | Final</title>
+    <title>Misty Archive | Official</title>
     <style>
         :root {
             --blush: #f8bbd0;
             --cream: #fffdf0;
             --text-soft: #5d4037;
-            --glass-soft: rgba(255, 255, 255, 0.4);
+            --glass-soft: rgba(255, 255, 255, 0.45);
             --accent: #e0d5c1;
         }
 
+        /* BASE STYLES */
         body, html { margin: 0; padding: 0; font-family: 'Georgia', serif; background: var(--cream); color: var(--text-soft); height: 100%; overflow: hidden; }
-        .view { display: none; width: 100vw; height: 100vh; position: relative; }
+        .view { display: none; width: 100vw; height: 100vh; position: relative; overflow-y: auto; box-sizing: border-box; }
         .active { display: flex !important; flex-direction: column; }
 
-        /* LOADER */
-        #loader { position: fixed; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s ease; }
-        
-        /* WELCOME (With your Cherry Blossom BG) */
+        /* LOADER SECTION */
+        #loader { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: white; z-index: 9999; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; transition: opacity 0.6s ease; 
+        }
+        .loader-gif { width: 45vw; max-width: 280px; height: auto; }
+
+        /* WELCOME SCREEN */
         #welcome { justify-content: center; align-items: center; }
         .welcome-bg { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            /* 🟢 PASTE CHERRY BLOSSOM LINK BELOW */
             background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; 
-            filter: blur(12px) brightness(0.9); transform: scale(1.1); z-index: 0; 
+            filter: blur(8px) brightness(0.8); transform: scale(1.1); z-index: 0; 
         }
-        .glass-panel { background: var(--glass-soft); backdrop-filter: blur(10px); padding: 40px; border: 1px solid white; text-align: center; z-index: 5; }
+        .welcome-panel {
+            position: relative; z-index: 5; width: 85%; max-width: 450px; padding: 40px;
+            /* 🟢 PASTE WELCOME BOX IMAGE LINK BELOW */
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('PASTE_BOX_IMAGE_LINK') center/cover;
+            border: 2px solid white; backdrop-filter: blur(12px); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .welcome-panel h1 { color: white; letter-spacing: 5px; font-size: 1.8rem; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
 
-        /* CATEGORIES */
-        .screen-bg { background: var(--cream); justify-content: center; align-items: center; }
-        .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
-        .bento-item { background: white; border: 1px solid var(--accent); height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; }
-        .bento-item:hover { background: var(--blush); color: white; }
+        /* CATEGORY SELECTION (Bento Grid) */
+        .screen-bg { background: var(--cream); padding: 20px; align-items: center; justify-content: center; }
+        .bento-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 15px; width: 100%; max-width: 800px; margin-top: 20px;
+        }
+        .bento-item { 
+            position: relative; height: 170px; overflow: hidden; border: 1px solid var(--accent); 
+            cursor: pointer; transition: 0.3s ease; display: flex; align-items: flex-end; justify-content: center;
+            background-color: #f0f0f0;
+        }
+        
+        /* 🟢 PASTE CATEGORY RAW LINKS IN THESE CLASSES */
+        .bento-item.human { background: url('PASTE_HUMAN_LINK') center/cover; }
+        .bento-item.elf { background: url('PASTE_ELF_LINK') center/cover; }
+        .bento-item.beastmen { background: url('PASTE_BEASTMEN_LINK') center/cover; }
+        .bento-item.vampire { background: url('PASTE_VAMPIRE_LINK') center/cover; }
 
-        /* VIEWER (Atelier Section) */
+        .bento-item b { 
+            width: 100%; background: rgba(255,255,255,0.9); padding: 10px 0; 
+            text-align: center; font-size: 0.8rem; letter-spacing: 2px; color: var(--text-soft); 
+        }
+        .bento-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* VIEWER AREA */
         .top-nav { display: flex; overflow-x: auto; padding: 15px; background: white; border-bottom: 2px solid var(--accent); min-height: 80px; }
-        .thumb { min-width: 65px; height: 65px; border: 2px solid #eee; margin-right: 12px; cursor: pointer; border-radius: 50%; object-fit: cover; }
+        .thumb { min-width: 65px; height: 65px; border: 2px solid #eee; margin-right: 12px; border-radius: 50%; object-fit: cover; }
         .stage { flex-grow: 1; position: relative; background: #fdf5e6; overflow: hidden; }
-        .main-char { position: absolute; left: -10%; bottom: 0; height: 95%; filter: drop-shadow(10px 0 20px rgba(0,0,0,0.1)); transition: 0.5s; }
-        .profile-card { position: absolute; right: 5%; bottom: 5%; width: 280px; background: white; padding: 25px; border-top: 10px solid var(--blush); box-shadow: 15px 15px 0px rgba(93, 64, 55, 0.05); }
-        .exp-icons { display: flex; gap: 10px; margin-top: 15px; }
-        .exp-img { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--accent); }
+        .main-char { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; height: 95%; transition: 0.5s ease; pointer-events: none; }
+        
+        @media (min-width: 768px) { .main-char { left: 10%; transform: none; } }
+
+        .profile-card { 
+            position: absolute; right: 5%; bottom: 5%; width: 90%; max-width: 320px; 
+            background: white; padding: 25px; border-top: 8px solid var(--blush); 
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.05); box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" style="width:180px;">
-        <div style="margin-top:10px; letter-spacing:3px; font-size:12px;">LOADING ARCHIVE...</div>
+        <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" class="loader-gif">
+        <div style="margin-top:15px; letter-spacing:4px; font-size:10px; color:#999;">LOADING MISTY ARCHIVE...</div>
     </div>
 
     <div id="main-content" style="visibility: hidden;">
         
         <div id="welcome" class="view active">
             <div class="welcome-bg"></div>
-            <div class="glass-panel">
-                <h1 style="margin:0; color:white; letter-spacing:5px;">MISTY ARCHIVE</h1>
-                <button onclick="nav('race-select')" style="margin-top:20px; padding:10px 30px; cursor:pointer; background:white; border:none; font-weight:bold;">ENTER</button>
+            <div class="welcome-panel">
+                <h1>MISTY ARCHIVE</h1>
+                <button onclick="nav('race-select')" style="margin-top:25px; padding:12px 40px; cursor:pointer; background:white; border:none; font-weight:bold; letter-spacing:2px; font-size:11px;">ENTER</button>
             </div>
         </div>
 
         <div id="race-select" class="view screen-bg">
             <h2 style="letter-spacing:5px;">SELECT RACE</h2>
             <div class="bento-grid">
-                <div class="bento-item" onclick="selectRace('human')">HUMAN</div>
-                <div class="bento-item" onclick="selectRace('elf')">ELF</div>
-                <div class="bento-item" onclick="selectRace('beastmen')">BEASTMEN</div>
-                <div class="bento-item" onclick="selectRace('demon')">DEMON</div>
+                <div class="bento-item human" onclick="selectRace('human')"><b>HUMAN</b></div>
+                <div class="bento-item elf" onclick="selectRace('elf')"><b>ELF</b></div>
+                <div class="bento-item beastmen" onclick="selectRace('beastmen')"><b>BEASTMEN</b></div>
+                <div class="bento-item vampire" onclick="selectRace('vampire')"><b>VAMPIRE</b></div>
             </div>
         </div>
 
         <div id="gender-select" class="view screen-bg">
-            <h2 id="gender-title" style="letter-spacing:5px;">SELECT GENDER</h2>
+            <h2 style="letter-spacing:5px;">SELECT GENDER</h2>
             <div class="bento-grid">
-                <div class="bento-item" onclick="selectGender('male')">MALE</div>
-                <div class="bento-item" onclick="selectGender('female')">FEMALE</div>
+                <div class="bento-item" style="background:#fff;" onclick="selectGender('male')"><b>MALE</b></div>
+                <div class="bento-item" style="background:#fff;" onclick="selectGender('female')"><b>FEMALE</b></div>
             </div>
+            <button onclick="window.history.back()" style="margin-top:40px; background:none; border:none; color:#bbb; font-weight:bold; cursor:pointer;">[ GO BACK ]</button>
         </div>
 
         <div id="viewer" class="view">
@@ -85,14 +123,10 @@
             <div class="stage">
                 <img id="char-img" src="" class="main-char">
                 <div class="profile-card">
-                    <h2 id="char-name">Select Character</h2>
-                    <p id="char-cv" style="font-size:12px; color:var(--blush); margin:5px 0;"></p>
-                    <p id="char-desc" style="font-size:14px; line-height:1.5;"></p>
-                    <div class="exp-icons" id="expressions" style="display:none;">
-                        <img id="exp1" src="" class="exp-img">
-                        <img id="exp2" src="" class="exp-img">
-                    </div>
-                    <button onclick="nav('gender-select')" style="border:none; background:none; color:var(--blush); font-weight:bold; cursor:pointer; margin-top:15px;">[ BACK ]</button>
+                    <h2 id="char-name" style="margin:0;">-</h2>
+                    <p id="char-cv" style="font-size:11px; color:var(--blush); margin:5px 0;"></p>
+                    <p id="char-desc" style="font-size:13px; line-height:1.6; margin-bottom:15px;"></p>
+                    <button onclick="window.history.back()" style="border:none; background:none; color:var(--blush); font-weight:bold; cursor:pointer; padding:0;">[ BACK ]</button>
                 </div>
             </div>
         </div>
@@ -102,6 +136,23 @@
         let selectedRace = "";
         let selectedGender = "";
 
+        // NAVIGATION ENGINE (Fixes the phone back button)
+        function nav(id, addHistory = true) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+            if (addHistory) history.pushState({ screenId: id }, "", "");
+        }
+
+        window.onpopstate = function(event) {
+            if (event.state && event.state.screenId) nav(event.state.screenId, false);
+            else nav('welcome', false);
+        };
+
+        function selectRace(race) { selectedRace = race; nav('gender-select'); }
+        function selectGender(gender) { selectedGender = gender; renderIcons(); nav('viewer'); }
+
+        // CHARACTER DATABASE
         const chars = [
             {
                 id: 'Atelier',
@@ -109,29 +160,11 @@
                 gender: 'female',
                 name: 'Atelier',
                 cv: 'Marika Tachibana',
-                desc: 'A young girl rescued from slavery. She is the quiet but kind-hearted poster girl of Dennis’s diner.',
-                main: 'https://tsuihosha-shokudo.com/assets/img/chara/img_chara_stand02.png',
-                icon: 'https://tsuihosha-shokudo.com/assets/img/chara/img_chara_up02-1.png',
-                exp1: 'https://tsuihosha-shokudo.com/assets/img/chara/img_chara_up02-2.png',
-                exp2: 'https://tsuihosha-shokudo.com/assets/img/logo_s_en.png'
+                desc: 'A gentle-hearted girl from the local hills. She enjoys the misty mornings and works at the village diner.',
+                main: 'https://tsuihosha-shokudo.com/assets/img/chara/atelier/img_chara_stand02.png',
+                icon: 'https://i.postimg.cc/C1z8g7z4/Atelier-Icon1.png'
             }
         ];
-
-        function nav(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function selectRace(race) {
-            selectedRace = race;
-            nav('gender-select');
-        }
-
-        function selectGender(gender) {
-            selectedGender = gender;
-            renderIcons();
-            nav('viewer');
-        }
 
         function renderIcons() {
             const list = document.getElementById('thumbnail-list');
@@ -152,18 +185,18 @@
             document.getElementById('char-desc').innerText = c.desc;
             document.getElementById('char-img').src = c.main;
             document.getElementById('char-img').style.opacity = '1';
-            document.getElementById('expressions').style.display = 'flex';
-            document.getElementById('exp1').src = c.exp1;
-            document.getElementById('exp2').src = c.exp2;
         }
 
+        // INITIAL LOAD
         window.addEventListener('load', () => {
+            history.replaceState({ screenId: 'welcome' }, "", "");
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('main-content').style.visibility = 'visible';
                 setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600);
-            }, 2000);
+            }, 2600);
         });
     </script>
 </body>
-</html>
+                                                                                                               </html>
+                                                                                                                                                                               
