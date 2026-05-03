@@ -3,111 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Misty Archive | Official v1.5</title>
+    <title>Misty Archive | Official v1.8</title>
     <style>
         :root {
             --blush: #f8bbd0;
             --cream: #fffdf0;
             --text-dark: #3e2723;
-            --text-mid: #6d4c41;
             --accent: #d7ccc8;
-            --glass: rgba(255, 255, 255, 0.85);
+            --glass: rgba(255, 255, 255, 0.8);
             --sidebar-w: 280px;
-            --shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        /* CORE UI & SECURITY */
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--text-dark); height: 100%; overflow: hidden; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--cream); color: var(--text-dark); height: 100%; overflow: hidden; }
         
         .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
         .view.active { display: flex !important; opacity: 1; }
 
-        /* --- PROFESSIONAL RAIN EFFECT --- */
-        .rain-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+        /* RAIN EFFECT */
+        .rain-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; opacity: 0.6; }
         .drop {
             position: absolute;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 100%);
-            width: 1.5px; height: 90px;
-            top: -100px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
+            width: 1.5px; height: 100px; top: -110px;
             animation: fall linear infinite;
         }
         @keyframes fall { to { transform: translateY(110vh); } }
 
-        /* --- THICK GHOOM FOG EFFECT --- */
+        /* THICK GHOOM FOG (Intensified) */
         .mist-container { position: relative; overflow: hidden; }
-        .mist-container::before {
-            content: ""; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(255,255,255,0.3) 100%);
-            z-index: 8; pointer-events: none;
-        }
         .mist-container::after {
             content: ""; position: absolute; top: 0; left: -150%; width: 400%; height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 45%, transparent 70%);
-            background-size: 50% 100%;
-            animation: thick-fog 18s infinite linear; 
-            pointer-events: none; z-index: 10;
-            filter: blur(20px);
+            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 50%, transparent 80%);
+            animation: thick-fog 12s infinite linear; 
+            pointer-events: none; z-index: 10; filter: blur(25px);
         }
         @keyframes thick-fog { 0% { transform: translateX(0); } 100% { transform: translateX(37.5%); } }
 
-        /* LOADING: HOLY GRAIL */
-        #loader { 
-            position: fixed; inset: 0; background: #fff; z-index: 9999; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        }
-        .loader-gif { width: 50vw; max-width: 280px; height: auto; }
-        .holy-text { margin-top: 20px; letter-spacing: 6px; font-size: 11px; color: var(--accent); animation: pulse 2s infinite; font-weight: bold; }
-        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+        /* LOADER */
+        #loader { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .loader-gif { width: 50vw; max-width: 280px; }
+        .holy-text { margin-top: 20px; letter-spacing: 5px; font-size: 11px; color: var(--accent); animation: pulse 2s infinite; font-weight: bold; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         /* SIDEBAR */
         #sidebar {
             position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%;
             background: #fff; z-index: 2000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow); padding: 40px 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2); padding: 40px 20px;
         }
         #sidebar.open { transform: translateX(var(--sidebar-w)); }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1500; display: none; backdrop-filter: blur(4px); }
 
-        .nav-header { display: flex; align-items: center; background: #fff; height: 64px; padding: 0 16px; border-bottom: 1px solid var(--accent); z-index: 100; }
-        .icon-btn { cursor: pointer; font-size: 24px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-
-        /* RACE BOXES */
+        /* BENTO BOXES */
         .content-scroll { padding: 24px 16px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; width: 100%; max-width: 900px; }
-        .bento-card { 
-            height: 200px; border-radius: 15px; overflow: hidden; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s;
-            border: 2px solid #fff; background: #eee center/cover no-repeat;
-        }
-        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; font-size: 14px; letter-spacing: 2px; z-index: 20; }
+        .bento-card { height: 200px; border-radius: 15px; overflow: hidden; position: relative; border: 2px solid #fff; background: #eee center/cover no-repeat; }
+        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; z-index: 20; }
 
-        /* VIEWER AREA */
+        /* VIEWER */
         .stage { flex-grow: 1; position: relative; background: #fdfdfd; overflow: hidden; display: flex; flex-direction: column; }
-        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1); z-index: 1; }
-        .bottom-sheet {
-            background: #fff; border-radius: 30px 30px 0 0; padding: 30px;
-            box-shadow: 0 -15px 45px rgba(0,0,0,0.1); z-index: 500;
-            max-height: 45%; overflow-y: auto; border-top: 5px solid var(--blush);
-        }
+        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; z-index: 1; opacity: 0; transition: 0.5s; }
+        .bottom-sheet { background: #fff; border-radius: 30px 30px 0 0; padding: 30px; box-shadow: 0 -15px 45px rgba(0,0,0,0.1); z-index: 500; border-top: 5px solid var(--blush); max-height: 40%; overflow-y: auto; }
 
-        /* WELCOME */
+        /* WELCOME DESIGN */
         .welcome-hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.6); }
-        .welcome-box-gif { 
-            position: relative; z-index: 100; width: 85%; max-width: 400px;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
-            padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
-            text-align: center; box-shadow: var(--shadow);
-        }
-        .gif-container { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 2px solid #fff; }
+        .welcome-box-gif { position: relative; z-index: 100; width: 85%; max-width: 400px; background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.3); }
+        .gif-container { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 2px solid #fff; background: white; }
         .btn-enter { background: #fff; border: none; padding: 15px 45px; border-radius: 50px; font-weight: 800; letter-spacing: 3px; cursor: pointer; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMenu()"></div>
+<body oncontextmenu="return false;">
+
+    <audio id="rain-snd" loop>
+        <source src="https://www.soundjay.com/nature/rain-on-window-01.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMenu()"></div>
     <div id="sidebar">
-        <h2 style="letter-spacing: 4px; color: var(--blush); margin-bottom: 40px;">ARCHIVE</h2>
+        <h2 style="letter-spacing: 4px; color: var(--blush);">ARCHIVE</h2>
         <div onclick="nav('welcome'); closeMenu()" style="padding:15px 0; border-bottom:1px solid #eee; cursor:pointer;">🏠 Home</div>
-        <div onclick="nav('race-select'); closeMenu()" style="padding:15px 0; border-bottom:1px solid #eee; cursor:pointer;">👤 Race Database</div>
+        <div onclick="nav('race-select'); closeMenu()" style="padding:15px 0; border-bottom:1px solid #eee; cursor:pointer;">👤 Database</div>
     </div>
 
     <div id="loader">
@@ -122,52 +98,38 @@
             <div class="rain-overlay" id="welcome-rain"></div>
             <div class="welcome-box-gif">
                 <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" class="gif-container">
-                <h1 style="color:#fff; letter-spacing: 6px; font-size: 1.5rem; margin-bottom: 20px;">MISTY ARCHIVE</h1>
-                <button class="btn-enter" onclick="nav('race-select')">ENTER</button>
+                <h1 style="color:#fff; letter-spacing: 5px; font-size: 1.4rem; margin-bottom: 20px;">MISTY ARCHIVE</h1>
+                <button class="btn-enter" onclick="startApp()">ENTER</button>
             </div>
         </div>
 
         <div id="race-select" class="view">
-            <div class="nav-header">
-                <div class="icon-btn" onclick="openMenu()">☰</div>
-                <div style="flex-grow:1; text-align:center; font-weight:800; letter-spacing:2px;">SELECT RACE</div>
-                <div style="width:44px;"></div>
+            <div style="display:flex; align-items:center; background:#fff; height:60px; padding:0 15px; border-bottom:1px solid var(--accent);">
+                <div onclick="openMenu()" style="font-size:24px; cursor:pointer;">☰</div>
+                <div style="flex-grow:1; text-align:center; font-weight:bold; letter-spacing:2px;">SELECT RACE</div>
             </div>
             <div class="content-scroll">
                 <div class="bento-grid">
-                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')">
-                        <div class="bento-label">HUMAN</div>
-                    </div>
-                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')">
-                        <div class="bento-label">ELF</div>
-                    </div>
-                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')">
-                        <div class="bento-label">BEASTMEN</div>
-                    </div>
-                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg')" onclick="selectRace('vampire')">
-                        <div class="bento-label">VAMPIRE</div>
-                    </div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')"><div class="bento-label">HUMAN</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')"><div class="bento-label">ELF</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')"><div class="bento-label">BEASTMEN</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg')" onclick="selectRace('vampire')"><div class="bento-label">VAMPIRE</div></div>
                 </div>
             </div>
         </div>
 
         <div id="viewer" class="view">
-            <div class="nav-header">
-                <div class="icon-btn" onclick="window.history.back()">←</div>
-                <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:15px; padding:0 10px; align-items:center;"></div>
+            <div style="display:flex; align-items:center; background:#fff; height:60px; border-bottom:1px solid var(--accent);">
+                <div onclick="window.history.back()" style="padding:15px; cursor:pointer;">←</div>
+                <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:12px; padding:5px;"></div>
             </div>
             <div class="stage">
                 <div class="rain-overlay" id="viewer-rain"></div>
                 <img id="char-img" src="" class="main-char">
                 <div class="bottom-sheet">
-                    <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                        <img id="minor-icon" src="" style="width:50px; height:50px; border-radius:10px; border:2px solid var(--blush); display:none;">
-                        <div>
-                            <h2 id="char-name" style="margin:0; font-size:24px;">-</h2>
-                            <p id="char-cv" style="font-size:11px; color:var(--blush); margin:0; font-weight:bold; letter-spacing:1px;"></p>
-                        </div>
-                    </div>
-                    <div id="char-desc" style="font-size:15px; line-height:1.7; color:var(--text-mid);">Select an entry.</div>
+                    <h2 id="char-name" style="margin:0;">Select Character</h2>
+                    <p id="char-cv" style="font-size:11px; color:var(--blush); margin:5px 0; font-weight:bold;"></p>
+                    <div id="char-desc" style="font-size:14px; line-height:1.6; color:#666;">Choose an entry from the bar above.</div>
                 </div>
             </div>
         </div>
@@ -176,26 +138,31 @@
     <script>
         let currentRace = "";
 
-        // RAIN SCRIPT
-        function makeRain(containerId, count) {
-            const container = document.getElementById(containerId);
+        function startApp() {
+            nav('race-select');
+            const rain = document.getElementById('rain-snd');
+            rain.play().catch(() => console.log("Audio requires interaction"));
+        }
+
+        function makeRain(id, count) {
+            const container = document.getElementById(id);
             for(let i=0; i<count; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'drop';
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.animationDuration = (Math.random() * 0.5 + 0.4) + 's';
-                drop.style.animationDelay = Math.random() * 2 + 's';
-                container.appendChild(drop);
+                const d = document.createElement('div');
+                d.className = 'drop';
+                d.style.left = Math.random() * 100 + 'vw';
+                d.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                d.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(d);
             }
         }
 
         function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display='block'; }
         function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display='none'; }
 
-        function nav(id, addHistory = true) {
+        function nav(id, addHist = true) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(addHistory) history.pushState({ screenId: id }, "", "");
+            if(addHist) history.pushState({ screenId: id }, "", "");
         }
 
         window.onpopstate = (e) => {
@@ -203,7 +170,17 @@
             else nav('welcome', false);
         };
 
-        function selectRace(race) { currentRace = race; renderIcons(); nav('viewer'); }
+        // THE FIX: Reset character UI when switching races
+        function selectRace(r) { 
+            currentRace = r; 
+            document.getElementById('char-img').src = "";
+            document.getElementById('char-img').style.opacity = "0";
+            document.getElementById('char-name').innerText = "Select Character";
+            document.getElementById('char-cv').innerText = "";
+            document.getElementById('char-desc').innerText = "Choose an entry from the bar above.";
+            renderIcons(); 
+            nav('viewer'); 
+        }
 
         const characters = [
             {
@@ -212,8 +189,7 @@
                 cv: 'Marika Tachibana',
                 desc: 'A gentle-hearted human girl from the misty Ghoom hills. She handles the diner with a warm smile even on the foggiest days.',
                 main: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
-                icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png',
-                minor: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-minor.png'
+                icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png'
             }
         ];
 
@@ -223,29 +199,27 @@
             characters.filter(c => c.race === currentRace).forEach(c => {
                 const img = document.createElement('img');
                 img.src = c.icon;
-                img.style = "width:48px; height:48px; border-radius:50%; border:2px solid var(--blush); cursor:pointer; flex-shrink:0;";
+                img.style = "width:45px; height:45px; border-radius:50%; border:2px solid var(--blush); cursor:pointer;";
                 img.onclick = () => {
                     document.getElementById('char-name').innerText = c.name;
                     document.getElementById('char-cv').innerText = "CV: " + c.cv;
                     document.getElementById('char-desc').innerText = c.desc;
                     document.getElementById('char-img').src = c.main;
-                    const minor = document.getElementById('minor-icon');
-                    if(c.minor) { minor.src = c.minor; minor.style.display = 'block'; }
-                    else { minor.style.display = 'none'; }
+                    document.getElementById('char-img').style.opacity = "1";
                 };
                 bar.appendChild(img);
             });
         }
 
         window.addEventListener('load', () => {
-            makeRain('welcome-rain', 35);
-            makeRain('viewer-rain', 25);
+            makeRain('welcome-rain', 45);
+            makeRain('viewer-rain', 30);
             history.replaceState({ screenId: 'welcome' }, "", "");
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('app').style.visibility = 'visible';
                 setTimeout(() => document.getElementById('loader').style.display='none', 600);
-            }, 3000);
+            }, 2800);
         });
     </script>
 </body>
