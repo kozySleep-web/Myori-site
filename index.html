@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Misty Archive | The Holy Grail</title>
+    <title>Misty Archive | Holy Grail Edition</title>
     <style>
         :root {
             --blush: #f8bbd0;
@@ -21,21 +21,42 @@
         body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--text-dark); height: 100%; overflow: hidden; }
         
         .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
-        .view.active { display: flex !important; opacity: 1; }
+        .active { display: flex !important; opacity: 1; }
 
-        /* LOADING: HOLY GRAIL ANIMATION */
+        /* --- PROFESSIONAL RAIN EFFECT --- */
+        .rain-overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 2;
+            background: rgba(0, 0, 0, 0.05); /* Slight darkening for mood */
+            overflow: hidden;
+        }
+        .drop {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 100%);
+            width: 1px; height: 80px;
+            top: -100px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall { to { transform: translateY(110vh); } }
+
+        /* --- MOVING MIST EFFECT --- */
+        .mist-container { position: relative; overflow: hidden; }
+        .mist-container::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 300%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: mist-move 12s infinite linear; pointer-events: none; z-index: 3;
+        }
+        @keyframes mist-move { 0% { transform: translateX(0); } 100% { transform: translateX(33.3%); } }
+
+        /* LOADING: HOLY GRAIL */
         #loader { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
         }
-        .loader-gif { width: 50vw; max-width: 280px; height: auto; }
-        .holy-text { 
-            margin-top: 20px; letter-spacing: 6px; font-size: 12px; color: var(--accent);
-            animation: pulse 2s infinite; font-weight: bold;
-        }
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        .loader-gif { width: 50vw; max-width: 260px; height: auto; }
+        .holy-text { margin-top: 20px; letter-spacing: 6px; font-size: 12px; color: var(--accent); animation: pulse 2s infinite; font-weight: bold; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        /* SIDEBAR MENU */
+        /* SIDEBAR */
         #sidebar {
             position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%;
             background: #fff; z-index: 2000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,7 +68,7 @@
         .nav-header { display: flex; align-items: center; background: #fff; height: 64px; padding: 0 16px; border-bottom: 1px solid var(--accent); z-index: 100; }
         .icon-btn { cursor: pointer; font-size: 24px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
-        /* BENTO BOXES (Race Selection) */
+        /* RACE BOXES */
         .content-scroll { padding: 24px 16px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; width: 100%; max-width: 900px; }
         .bento-card { 
@@ -55,21 +76,20 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s;
             border: 2px solid #fff; background: #eee center/cover no-repeat;
         }
-        .bento-card:active { transform: scale(0.95); }
-        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; font-size: 14px; letter-spacing: 2px; }
+        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; font-size: 14px; letter-spacing: 2px; z-index: 10; }
 
-        /* CHARACTER VIEWER STAGE */
+        /* CHARACTER VIEW */
         .stage { flex-grow: 1; position: relative; background: #fdfdfd; overflow: hidden; display: flex; flex-direction: column; }
-        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
+        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1); z-index: 1; }
 
-        /* REFINED BOTTOM SHEET */
+        /* BOTTOM SHEET */
         .bottom-sheet {
             background: #fff; border-radius: 30px 30px 0 0; padding: 30px;
             box-shadow: 0 -15px 45px rgba(0,0,0,0.1); z-index: 500;
             max-height: 45%; overflow-y: auto; border-top: 5px solid var(--blush);
         }
 
-        /* WELCOME SCREEN DESIGN */
+        /* WELCOME DESIGN */
         .welcome-hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.6); }
         .welcome-box-gif { 
             position: relative; z-index: 10; width: 85%; max-width: 400px;
@@ -78,7 +98,6 @@
             text-align: center; box-shadow: var(--shadow);
         }
         .gif-container { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 2px solid #fff; }
-
         .btn-enter { background: #fff; border: none; padding: 15px 45px; border-radius: 50px; font-weight: 800; letter-spacing: 3px; cursor: pointer; }
     </style>
 </head>
@@ -100,6 +119,7 @@
         
         <div id="welcome" class="view active" style="justify-content: center; align-items: center;">
             <div class="welcome-hero"></div>
+            <div class="rain-overlay" id="welcome-rain"></div>
             <div class="welcome-box-gif">
                 <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" class="gif-container">
                 <h1 style="color:#fff; letter-spacing: 6px; font-size: 1.5rem; margin-bottom: 20px;">MISTY ARCHIVE</h1>
@@ -115,18 +135,10 @@
             </div>
             <div class="content-scroll">
                 <div class="bento-grid">
-                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')">
-                        <div class="bento-label">HUMAN</div>
-                    </div>
-                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')">
-                        <div class="bento-label">ELF</div>
-                    </div>
-                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')">
-                        <div class="bento-label">BEASTMEN</div>
-                    </div>
-                    <div class="bento-card" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg')" onclick="selectRace('vampire')">
-                        <div class="bento-label">VAMPIRE</div>
-                    </div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')"><div class="bento-label">HUMAN</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')"><div class="bento-label">ELF</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')"><div class="bento-label">BEASTMEN</div></div>
+                    <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg')" onclick="selectRace('vampire')"><div class="bento-label">VAMPIRE</div></div>
                 </div>
             </div>
         </div>
@@ -137,6 +149,7 @@
                 <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:15px; padding:0 10px; align-items:center;"></div>
             </div>
             <div class="stage">
+                <div class="rain-overlay" id="viewer-rain"></div>
                 <img id="char-img" src="" class="main-char">
                 <div class="bottom-sheet">
                     <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
@@ -154,6 +167,19 @@
 
     <script>
         let currentRace = "";
+
+        // RAIN GENERATOR
+        function makeRain(containerId, count) {
+            const container = document.getElementById(containerId);
+            for(let i=0; i<count; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'drop';
+                drop.style.left = Math.random() * 100 + 'vw';
+                drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(drop);
+            }
+        }
 
         function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display='block'; }
         function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display='none'; }
@@ -180,15 +206,6 @@
                 main: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
                 icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png',
                 minor: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-minor.png'
-            },
-            {
-                race: 'vampire',
-                name: 'Archive Secret',
-                cv: 'Restricted',
-                desc: 'The data for this vampire inhabitant is still being decrypted. Expect a dark silhouette in the mist soon...',
-                main: '', 
-                icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif',
-                minor: ''
             }
         ];
 
@@ -213,6 +230,8 @@
         }
 
         window.addEventListener('load', () => {
+            makeRain('welcome-rain', 30);
+            makeRain('viewer-rain', 20);
             history.replaceState({ screenId: 'welcome' }, "", "");
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
