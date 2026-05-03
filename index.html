@@ -3,143 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Misty Archive | Sakura Breeze Edition</title>
+    <title>Misty Archive | Official v2.5</title>
     <style>
         :root {
             --blush: #f8bbd0;
-            --night-bg: #2c3e50;
-            --night-surface: #34495e;
-            --text-light: #ecf0f1;
-            --accent: #d7ccc8;
-            --glass: rgba(0, 0, 0, 0.5);
             --sidebar-w: 280px;
+            /* Default Night Mode Colors */
+            --bg-color: #1a1a2e;
+            --surface: #16213e;
+            --text-color: #ecf0f1;
+            --glass: rgba(0, 0, 0, 0.6);
+            --header-bg: #0f3460;
+            --accent: #d7ccc8;
         }
 
-        /* BASE & SECURITY */
+        /* LIGHT MODE OVERRIDES */
+        body.light-mode {
+            --bg-color: #f0f2f5;
+            --surface: #ffffff;
+            --text-color: #3e2723;
+            --glass: rgba(255, 255, 255, 0.8);
+            --header-bg: #ffffff;
+            --accent: #6d4c41;
+        }
+
+        /* BASE SETUP */
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--night-bg); color: var(--text-light); height: 100%; overflow: hidden; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); height: 100%; overflow: hidden; transition: background 0.5s ease; }
         
-        .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.6s ease; }
+        .view { display: none; width: 100vw; height: 100vh; position: relative; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
         .view.active { display: flex !important; opacity: 1; }
 
-        /* --- SAKURA PETALS (Flying Flowers) --- */
-        .sakura-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 55; overflow: hidden; }
-        .petal {
-            position: absolute;
-            background: var(--blush);
-            border-radius: 150% 0 150% 0; /* Petal shape */
-            opacity: 0.7;
-            animation: drift linear infinite, sway ease-in-out infinite;
-        }
-        @keyframes drift {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); }
-            100% { transform: translateY(110vh) translateX(100vw) rotate(720deg); }
-        }
-        @keyframes sway {
-            0%, 100% { margin-left: 0; }
-            50% { margin-left: 50px; }
-        }
-
-        /* --- INTENSE RAIN --- */
-        .rain-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
-        .drop {
-            position: absolute;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 100%);
-            width: 2px; height: 120px; top: -120px;
-            animation: fall linear infinite;
-        }
+        /* --- SAKURA & RAIN (Optimized) --- */
+        .sakura-overlay, .rain-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 55; overflow: hidden; }
+        .petal { position: absolute; background: var(--blush); border-radius: 150% 0 150% 0; opacity: 0.7; animation: drift linear infinite, sway ease-in-out infinite; }
+        .drop { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 100%); width: 1.5px; height: 100px; animation: fall linear infinite; }
+        @keyframes drift { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); } 100% { transform: translateY(110vh) translateX(100vw) rotate(720deg); } }
+        @keyframes sway { 0%, 100% { margin-left: 0; } 50% { margin-left: 50px; } }
         @keyframes fall { to { transform: translateY(110vh); } }
 
-        /* THICK NIGHT FOG */
+        /* THICK FOG */
         .mist-container { position: relative; overflow: hidden; }
         .mist-container::after {
             content: ""; position: absolute; top: 0; left: -150%; width: 400%; height: 100%;
             background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, transparent 80%);
-            animation: thick-fog 14s infinite linear; 
-            pointer-events: none; z-index: 10; filter: blur(30px);
+            animation: thick-fog 14s infinite linear; pointer-events: none; z-index: 10; filter: blur(30px);
         }
         @keyframes thick-fog { 0% { transform: translateX(0); } 100% { transform: translateX(37.5%); } }
 
-        /* LOADER */
-        #loader { position: fixed; inset: 0; background: #1a1a1a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .loader-gif { width: 50vw; max-width: 260px; }
-        .holy-text { margin-top: 20px; letter-spacing: 5px; font-size: 11px; color: var(--accent); animation: pulse 2s infinite; font-weight: bold; }
-        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
-
-        /* SIDEBAR */
+        /* SIDEBAR & TOGGLE */
         #sidebar {
             position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%;
-            background: var(--night-surface); z-index: 2000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5); padding: 50px 25px; color: white;
+            background: var(--surface); z-index: 2000; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5); padding: 50px 25px;
         }
         #sidebar.open { transform: translateX(var(--sidebar-w)); }
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; backdrop-filter: blur(8px); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; backdrop-filter: blur(8px); }
+        .theme-switch { padding: 15px; border-radius: 12px; background: var(--header-bg); border: 1px solid var(--accent); color: var(--text-color); margin-top: 20px; text-align: center; font-weight: bold; cursor: pointer; }
 
-        /* BENTO BOXES */
-        .content-scroll { padding: 24px 16px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; width: 100%; max-width: 900px; }
-        .bento-card { height: 180px; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); background: #222 center/cover no-repeat; filter: brightness(0.8); }
-        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; z-index: 20; color: white; backdrop-filter: blur(5px); }
+        /* BENTO & VIEWER */
+        .header { display: flex; align-items: center; background: var(--header-bg); height: 60px; padding: 0 15px; border-bottom: 1px solid var(--accent); }
+        .bento-card { height: 180px; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); background-color: #222; background-position: center; background-size: cover; }
+        .bento-label { position: absolute; bottom: 0; width: 100%; background: var(--glass); padding: 12px; text-align: center; font-weight: 700; z-index: 20; backdrop-filter: blur(5px); }
+        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 90%; z-index: 1; transition: 0.5s ease; }
+        .bottom-sheet { background: var(--surface); border-radius: 30px 30px 0 0; padding: 30px; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); z-index: 500; border-top: 5px solid var(--blush); max-height: 40%; overflow-y: auto; }
 
-        /* VIEWER */
-        .stage { flex-grow: 1; position: relative; background: #1c1c1c; overflow: hidden; display: flex; flex-direction: column; }
-        .main-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 90%; z-index: 1; opacity: 0; transition: 0.6s; }
-        .bottom-sheet { background: var(--night-surface); border-radius: 30px 30px 0 0; padding: 30px; box-shadow: 0 -15px 45px rgba(0,0,0,0.4); z-index: 500; border-top: 5px solid var(--blush); max-height: 40%; overflow-y: auto; color: white; }
-
-        /* WELCOME DESIGN */
-        .welcome-hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.4); }
-        .welcome-box-gif { 
-            position: relative; z-index: 100; width: 90%; max-width: 420px; 
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); 
-            padding: 25px; border-radius: 25px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.1); 
-        }
-        .gif-container { 
-            width: 100%; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.2);
-            mix-blend-mode: screen; 
-            filter: contrast(1.2) brightness(1.1); 
-        }
-        .btn-enter { background: #fff; border: none; padding: 16px 50px; border-radius: 50px; font-weight: 800; letter-spacing: 4px; cursor: pointer; transition: 0.3s; }
+        /* WELCOME */
+        .welcome-hero { position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.5); }
+        .welcome-box { position: relative; z-index: 100; width: 90%; max-width: 420px; background: var(--glass); backdrop-filter: blur(15px); padding: 25px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .gif-container { width: 100%; border-radius: 15px; margin-bottom: 25px; mix-blend-mode: screen; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <audio id="rain-snd" loop>
-        <source src="https://www.soundjay.com/nature/rain-on-window-01.mp3" type="audio/mpeg">
-    </audio>
-
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMenu()"></div>
     <div id="sidebar">
         <h2 style="letter-spacing: 4px; color: var(--blush);">ARCHIVE</h2>
-        <div onclick="nav('welcome'); closeMenu()" style="padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1); cursor:pointer;">🏠 Home</div>
-        <div onclick="nav('race-select'); closeMenu()" style="padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1); cursor:pointer;">👤 Database</div>
+        <div onclick="nav('welcome'); closeMenu()" style="padding:15px 0; border-bottom:1px solid var(--accent); cursor:pointer;">🏠 Home</div>
+        <div onclick="nav('race-select'); closeMenu()" style="padding:15px 0; border-bottom:1px solid var(--accent); cursor:pointer;">👤 Database</div>
+        <div class="theme-switch" onclick="toggleTheme()">🌓 TOGGLE THEME</div>
     </div>
 
-    <div id="loader">
-        <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" class="loader-gif">
-        <div class="holy-text">OPENING THE HOLY GRAIL</div>
+    <div id="loader" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" style="width:250px;">
     </div>
 
     <div id="app" style="visibility: hidden;">
-        
-        <div id="welcome" class="view active" style="justify-content: center; align-items: center;">
+        <div id="welcome" class="view active" style="justify-content:center; align-items:center;">
             <div class="welcome-hero"></div>
             <div class="sakura-overlay" id="welcome-sakura"></div>
             <div class="rain-overlay" id="welcome-rain"></div>
-            <div class="welcome-box-gif">
+            <div class="welcome-box">
                 <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" class="gif-container">
-                <h1 style="color:#fff; letter-spacing: 5px; font-size: 1.4rem; margin-bottom: 25px;">MISTY ARCHIVE</h1>
-                <button class="btn-enter" onclick="startApp()">ENTER</button>
+                <h1 style="color:#fff; letter-spacing:5px;">MISTY ARCHIVE</h1>
+                <button onclick="nav('race-select')" style="padding:15px 50px; border-radius:50px; border:none; font-weight:bold; cursor:pointer;">ENTER</button>
             </div>
         </div>
 
         <div id="race-select" class="view">
-            <div style="display:flex; align-items:center; background:var(--night-surface); height:60px; padding:0 15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <div class="header">
                 <div onclick="openMenu()" style="font-size:24px; cursor:pointer;">☰</div>
-                <div style="flex-grow:1; text-align:center; font-weight:bold; letter-spacing:3px;">DATABASE</div>
+                <div style="flex-grow:1; text-align:center; font-weight:bold;">DATABASE</div>
             </div>
-            <div class="content-scroll">
-                <div class="bento-grid">
+            <div style="padding:20px; overflow-y:auto; flex-grow:1;">
+                <div class="bento-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:15px;">
                     <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png')" onclick="selectRace('human')"><div class="bento-label">HUMAN</div></div>
                     <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg')" onclick="selectRace('elf')"><div class="bento-label">ELF</div></div>
                     <div class="bento-card mist-container" style="background-image:url('https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg')" onclick="selectRace('beastmen')"><div class="bento-label">BEASTMEN</div></div>
@@ -149,18 +116,17 @@
         </div>
 
         <div id="viewer" class="view">
-            <div style="display:flex; align-items:center; background:var(--night-surface); height:60px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <div onclick="window.history.back()" style="padding:15px; cursor:pointer;">←</div>
-                <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:12px; padding:5px;"></div>
+            <div class="header">
+                <div onclick="window.history.back()" style="cursor:pointer;">←</div>
+                <div id="thumb-bar" style="display:flex; overflow-x:auto; gap:10px; padding:5px;"></div>
             </div>
             <div class="stage">
                 <div class="sakura-overlay" id="viewer-sakura"></div>
                 <div class="rain-overlay" id="viewer-rain"></div>
                 <img id="char-img" src="" class="main-char">
                 <div class="bottom-sheet">
-                    <h2 id="char-name" style="margin:0;">Archive Record</h2>
-                    <p id="char-cv" style="font-size:11px; color:var(--blush); margin:5px 0; font-weight:bold;"></p>
-                    <div id="char-desc" style="font-size:14px; line-height:1.6; color:#ccc;">Seeking data in the mist...</div>
+                    <h2 id="char-name" style="margin:0;">-</h2>
+                    <div id="char-desc" style="margin-top:10px; line-height:1.6;">Select character.</div>
                 </div>
             </div>
         </div>
@@ -169,14 +135,24 @@
     <script>
         let currentRace = "";
 
-        function startApp() {
-            nav('race-select');
-            const rainSnd = document.getElementById('rain-snd');
-            rainSnd.volume = 0.5;
-            rainSnd.play().catch(() => {});
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
         }
 
-        // GENERATORS
+        function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display='block'; }
+        function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display='none'; }
+
+        function nav(id, hist = true) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(hist) history.pushState({ screenId: id }, "", "");
+        }
+
+        window.onpopstate = (e) => {
+            if(e.state && e.state.screenId) nav(e.state.screenId, false);
+            else nav('welcome', false);
+        };
+
         function makeRain(id, count) {
             const container = document.getElementById(id);
             for(let i=0; i<count; i++) {
@@ -197,44 +173,23 @@
                 const size = Math.random() * 10 + 5 + 'px';
                 p.style.width = size; p.style.height = size;
                 p.style.left = Math.random() * 100 + 'vw';
-                p.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Drifting speed
+                p.style.animationDuration = (Math.random() * 5 + 5) + 's';
                 p.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(p);
             }
-        }
-
-        function openMenu() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display='block'; }
-        function closeMenu() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display='none'; }
-
-        function nav(id, addHist = true) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(addHist) history.pushState({ screenId: id }, "", "");
-        }
-
-        window.onpopstate = (e) => {
-            if(e.state && e.state.screenId) nav(e.state.screenId, false);
-            else nav('welcome', false);
-        };
-
-        function selectRace(r) { 
-            currentRace = r; 
-            document.getElementById('char-img').src = "";
-            document.getElementById('char-img').style.opacity = "0";
-            renderIcons(); 
-            nav('viewer'); 
         }
 
         const characters = [
             {
                 race: 'human',
                 name: 'Atelier',
-                cv: 'Marika Tachibana',
-                desc: 'A gentle human girl from the Ghoom hills. Her presence is like a warm candle in the midnight fog.',
+                desc: 'A gentle human girl from the Ghoom hills.',
                 main: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
                 icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png'
             }
         ];
+
+        function selectRace(r) { currentRace = r; renderIcons(); nav('viewer'); }
 
         function renderIcons() {
             const bar = document.getElementById('thumb-bar');
@@ -242,10 +197,9 @@
             characters.filter(c => c.race === currentRace).forEach(c => {
                 const img = document.createElement('img');
                 img.src = c.icon;
-                img.style = "width:45px; height:45px; border-radius:50%; border:2px solid var(--blush); cursor:pointer; flex-shrink:0;";
+                img.style = "width:45px; height:45px; border-radius:50%; border:2px solid var(--blush); cursor:pointer;";
                 img.onclick = () => {
                     document.getElementById('char-name').innerText = c.name;
-                    document.getElementById('char-cv').innerText = "CV: " + c.cv;
                     document.getElementById('char-desc').innerText = c.desc;
                     document.getElementById('char-img').src = c.main;
                     document.getElementById('char-img').style.opacity = "1";
@@ -255,16 +209,13 @@
         }
 
         window.addEventListener('load', () => {
-            makeRain('welcome-rain', 50);
-            makeRain('viewer-rain', 30);
-            makeSakura('welcome-sakura', 15);
-            makeSakura('viewer-sakura', 10);
-            history.replaceState({ screenId: 'welcome' }, "", "");
+            makeRain('welcome-rain', 50); makeRain('viewer-rain', 30);
+            makeSakura('welcome-sakura', 15); makeSakura('viewer-sakura', 10);
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 document.getElementById('app').style.visibility = 'visible';
                 setTimeout(() => document.getElementById('loader').style.display='none', 600);
-            }, 2800);
+            }, 2500);
         });
     </script>
 </body>
