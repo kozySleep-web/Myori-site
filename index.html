@@ -1,123 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Character Profile</title>
+    <title>Anime Character Select</title>
     <style>
-        body {
-            background-color: #f4f7f6;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
+        body { margin: 0; background: #fdf5e6; font-family: sans-serif; text-align: center; }
+        
+        /* THE ICON GRID */
+        .icon-grid {
+            display: flex; justify-content: center; flex-wrap: wrap;
+            gap: 10px; padding: 20px; background: #fffdf0; border-bottom: 2px solid #ddd;
+        }
+        .icon {
+            width: 60px; height: 60px; border: 2px solid #ccc; cursor: pointer;
+            border-radius: 5px; object-fit: cover; transition: 0.2s;
+        }
+        .icon:hover { border-color: #ffb6c1; transform: scale(1.1); }
+
+        /* THE DISPLAY AREA */
+        .main-display {
+            position: relative; width: 100%; height: 600px;
+            background-size: cover; background-position: center;
+            transition: 0.5s; overflow: hidden;
+        }
+        .char-img {
+            position: absolute; left: 10%; bottom: 0;
+            height: 80%; transition: 0.5s;
         }
 
-        .card {
-            background: white;
-            width: 100%;
-            max-width: 350px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+        /* THE FLOATING BOX */
+        .info-box {
+            position: absolute; right: 5%; top: 20%;
+            width: 250px; padding: 20px; text-align: left;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
         }
-
-        .character-image {
-            width: 100%;
-            height: 320px;
-            object-fit: cover;
-            background-color: #ffd1dc;
-        }
-
-        .content {
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 { margin: 0; color: #4a4a4a; }
-        p { color: #777; line-height: 1.5; }
-
-        .btn-skill {
-            background-color: #d18abf;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        /* BIGGER Skill Display Area */
-        #skill-display {
-            display: none; 
-            width: 100%;
-            max-width: 380px; /* Made this slightly wider */
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            text-align: center;
-            animation: fadeIn 0.4s;
-            margin-bottom: 30px;
-        }
-
-        .skill-img {
-            width: 100%;
-            height: 250px; /* Made the image taller/bigger */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-top: 10px;
-            background-color: #e0f2f1;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .info-box h1 { margin: 0; font-size: 28px; }
+        .info-box .cv { font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <img src="https://placehold.co/350x320/f8bbd0/white?text=Lina+Image" class="character-image">
-        <div class="content">
-            <h1>Lina</h1>
-            <p>An 8-year-old traveler of the misty hills. She carries a lantern that guides her through the thickest fog.</p>
-            <button class="btn-skill" id="skill-btn" onclick="toggleSkills()">Show Magic Skill</button>
+    <div class="icon-grid">
+        <img src="https://placehold.co/60x60/f8bbd0/white?text=L" class="icon" onclick="changeChar('Lina')">
+        <img src="https://placehold.co/60x60/bbdefb/black?text=A" class="icon" onclick="changeChar('Atelier')">
+    </div>
+
+    <div id="display" class="main-display" style="background-image: url('https://placehold.co/800x600/e0e0e0/grey?text=Misty+Forest');">
+        
+        <img id="main-char" src="https://placehold.co/400x600/transparent/transparent?text=Lina+Full" class="char-img">
+
+        <div id="box" class="info-box" style="background: #f8bbd0;">
+            <h1 id="name">Lina</h1>
+            <p id="cv" class="cv">CV. Voice Actress A</p>
+            <p id="desc">A cheerful traveler of the misty hills. She carries a lantern to guide her path.</p>
         </div>
     </div>
 
-    <div id="skill-display">
-        <h2 style="color: #d18abf; margin-top: 0;">Skill: Mist Bloom</h2>
-        <p style="font-size: 14px;">Lina uses her lantern to illuminate the path and make magic flowers grow in the cold mist.</p>
-        <img src="https://placehold.co/400x300/a5d6a7/white?text=BIG+Magic+Effect+Image" class="skill-img">
-    </div>
-
     <script>
-        function toggleSkills() {
-            var skillSection = document.getElementById('skill-display');
-            var btn = document.getElementById('skill-btn');
-            
-            // Check if it is currently hidden
-            if (skillSection.style.display === "none" || skillSection.style.display === "") {
-                skillSection.style.display = "block"; // Show it
-                btn.innerText = "Hide Magic Skill"; // Change button text
-                
-                // Scroll down to see the big image
-                setTimeout(() => {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 100);
-                
-            } else {
-                skillSection.style.display = "none"; // Hide it
-                btn.innerText = "Show Magic Skill"; // Change button text back
+        // Data for your characters
+        const data = {
+            'Lina': {
+                name: 'Lina',
+                cv: 'CV. Voice Actress A',
+                desc: 'A cheerful traveler of the misty hills. She carries a lantern to guide her path.',
+                color: '#f8bbd0',
+                bg: 'https://placehold.co/800x600/e0e0e0/666?text=Misty+Forest',
+                img: 'https://placehold.co/400x600/f8bbd0/white?text=Lina+Pose'
+            },
+            'Atelier': {
+                name: 'Atelier',
+                cv: 'CV. Marika Tachibana',
+                desc: 'A young girl rescued from a difficult past. She is quiet but has a very kind heart.',
+                color: '#e1bee7',
+                bg: 'https://placehold.co/800x600/d1c4e9/666?text=Town+Street',
+                img: 'https://placehold.co/400x600/e1bee7/white?text=Atelier+Pose'
             }
+        };
+
+        function changeChar(charName) {
+            const char = data[charName];
+            
+            // Update Text
+            document.getElementById('name').innerText = char.name;
+            document.getElementById('cv').innerText = char.cv;
+            document.getElementById('desc').innerText = char.desc;
+            
+            // Update Styles
+            document.getElementById('box').style.background = char.color;
+            document.getElementById('display').style.backgroundImage = `url('${char.bg}')`;
+            document.getElementById('main-char').src = char.img;
         }
     </script>
 
 </body>
-  </html>
+</html>
