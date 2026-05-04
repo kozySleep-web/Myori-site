@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Misty Archive - Final Engineered Vanguard Distribution.">
-    <title>Misty Archive | Vanguard Final</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Misty Archive - Final Resilient Production Build v14">
+    <title>Misty Archive | Vanguard v14</title>
     <style>
         :root {
-            --blush: #f8bbd0; --sidebar-w: 280px; --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --blush: #f8bbd0; --sidebar-w: 280px; --transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --accent: #94a3b8; --header: #0f172a;
             --skeleton: #2d3748;
         }
@@ -16,73 +16,74 @@
             --skeleton: #e2e8f0;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: background 0.3s; opacity: 0; }
         
-        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: background 0.3s; opacity: 0; }
+        #app { display: grid; height: 100%; grid-template-rows: auto 1fr; position: relative; z-index: 10; transition: filter 0.4s, transform 0.4s; }
+        #app.modal-open { filter: blur(12px) grayscale(0.6); transform: scale(0.98); pointer-events: none; }
 
-        #app { display: grid; height: 100%; grid-template-rows: auto 1fr; position: relative; z-index: 10; }
-        #app[inert], #app[aria-hidden="true"] { filter: grayscale(0.5) blur(2px); pointer-events: none; }
-
+        .app-header { height: 64px; background: var(--header); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(128,128,128,0.1); z-index: 1000; backdrop-filter: blur(10px); }
         .view { display: none; height: 100%; overflow-y: auto; opacity: 0; transform: translateY(10px); outline: none; }
         .view.active { display: flex; flex-direction: column; opacity: 1; transform: translateY(0); transition: 0.4s ease; }
         
-        .skeleton { background: var(--skeleton); position: relative; overflow: hidden; border-radius: 20px; }
-        .skeleton::after {
-            content: ""; position: absolute; inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: shimmer 1.5s infinite; transform: translateX(-100%);
-        }
+        .sidebar { position: fixed; left: 0; top: 0; width: var(--sidebar-w); height: 100%; background: var(--surface); z-index: 2000; padding: 30px 24px; box-shadow: 20px 0 60px rgba(0,0,0,0.3); transform: translateX(-100%); transition: transform var(--transition); visibility: hidden; }
+        .sidebar.open { transform: translateX(0); visibility: visible; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; backdrop-filter: blur(4px); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 20px; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .card { aspect-ratio: 1/1.2; overflow: hidden; position: relative; transition: transform 0.2s; background: var(--skeleton); border-radius: 20px; cursor: pointer; border: none; }
+        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.4s; }
+        .card img.loaded { opacity: 1; }
+        .card-label { position: absolute; bottom: 0; width: 100%; padding: 10px; background: rgba(0,0,0,0.8); color: #fff; text-align: center; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; }
+
+        .stage { flex: 1; position: relative; display: flex; justify-content: center; align-items: flex-end; overflow: hidden; }
+        #char-portrait { max-height: 85%; width: auto; opacity: 0; transform: translateY(20px); transition: 0.5s var(--transition); }
+        #char-portrait.active { opacity: 1; transform: translateY(0); }
+        .sheet { background: var(--surface); border-radius: 30px 30px 0 0; padding: 30px; border-top: 4px solid var(--blush); box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+
+        .loader-ui { display: none; align-items: center; justify-content: center; height: 100px; color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+        canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        button { cursor: pointer; border: none; background: none; color: inherit; font: inherit; outline-offset: 4px; }
+        
+        .skeleton { position: relative; overflow: hidden; }
+        .skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 100% { transform: translateX(100%); } }
 
-        .app-header { height: 64px; background: var(--header); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(128,128,128,0.1); z-index: 1000; }
-        .sidebar { position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%; background: var(--surface); z-index: 2000; transition: var(--transition); padding: 40px 24px; visibility: hidden; }
-        .sidebar.open { transform: translateX(var(--sidebar-w)); visibility: visible; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; backdrop-filter: blur(8px); }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; width: 100%; max-width: 1200px; margin: 0 auto; }
-        .card { aspect-ratio: 1/1.2; overflow: hidden; position: relative; border: 1px solid rgba(128,128,128,0.2); transition: transform 0.3s; background: #000; border-radius: 20px; }
-        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
-        .card img.loaded { opacity: 1; }
-        .card-label { position: absolute; bottom: 0; width: 100%; padding: 12px; background: rgba(0,0,0,0.8); color: #fff; text-align: center; font-weight: 600; font-size: 0.8rem; }
-
-        canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-        #net-warn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #e53e3e; color: #fff; padding: 10px 24px; border-radius: 50px; display: none; z-index: 9999; font-weight: bold; }
-        
-        button { cursor: pointer; border: none; background: none; color: inherit; font: inherit; outline-offset: 4px; }
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
-<body oncontextmenu="return false;">
-
+<body>
     <canvas id="fog-canvas"></canvas>
     <div id="sidebar-overlay" class="overlay"></div>
-    <div id="net-warn" role="alert">Archive Connectivity Lost</div>
     
-    <nav class="sidebar" id="sidebar" role="dialog" aria-modal="true" aria-label="Menu">
-        <h2 style="color: var(--blush); margin-bottom: 30px;">ARCHIVE</h2>
+    <nav class="sidebar" id="sidebar" role="dialog" aria-modal="true" aria-label="Archive Menu">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="color: var(--blush); letter-spacing: 2px;">ARCHIVE</h2>
+            <button id="close-sidebar" aria-label="Close Menu" style="font-size:24px;">✕</button>
+        </div>
         <button id="theme-btn" style="width: 100%; padding: 12px; border: 1px solid var(--accent); border-radius: 12px; margin-bottom: 20px;">🌓 Toggle Theme</button>
-        <button class="nav-btn" data-target="welcome" style="display:block; width:100%; text-align:left; padding:15px 0;">🏠 Home</button>
+        <button class="nav-btn" data-target="welcome" style="display:block; width:100%; text-align:left; padding:15px 0; border-bottom:1px solid rgba(128,128,128,0.1);">🏠 Home</button>
         <button class="nav-btn" data-target="race-select" style="display:block; width:100%; text-align:left; padding:15px 0;">👤 Database</button>
-        <button id="close-sidebar" style="margin-top: 40px; color: var(--accent);">Exit Menu</button>
     </nav>
 
     <div id="app">
         <header class="app-header">
             <button id="menu-btn" aria-label="Open Menu" style="font-size: 24px;">☰</button>
-            <h1 id="header-title" style="flex:1; text-align:center; font-size:0.9rem; letter-spacing:2px; text-transform: uppercase;">MISTY ARCHIVE</h1>
+            <h1 id="header-title" style="flex:1; text-align:center; font-size:0.8rem; letter-spacing:2px; font-weight: 800;">MISTY ARCHIVE</h1>
+            <div style="width: 24px;"></div>
         </header>
 
-        <main id="main-content" role="main">
+        <main id="main-content" role="main" aria-live="polite">
             <section id="welcome" class="view active" tabindex="-1">
                 <div style="position:absolute; inset:0; background:url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter:brightness(0.3);"></div>
-                <div style="margin:auto; z-index:10; text-align:center; padding:40px; background:rgba(0,0,0,0.4); border-radius:32px; backdrop-filter:blur(20px); width:90%; max-width:400px;">
-                    <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" style="width:100%; mix-blend-mode:screen;" alt="Animation">
-                    <button class="nav-btn" data-target="race-select" style="width:100%; margin-top:20px; padding:18px; border-radius:50px; background:#fff; color:#000; font-weight:800;">DECRYPT DATA</button>
+                <div style="margin:auto; z-index:10; text-align:center; padding:40px; background:rgba(0,0,0,0.4); border-radius:32px; backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); width:90%; max-width:400px;">
+                    <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" style="width:100%; mix-blend-mode:screen;" alt="">
+                    <button class="nav-btn" data-target="race-select" style="width:100%; margin-top:20px; padding:18px; border-radius:50px; background:#fff; color:#000; font-weight:800;">INITIALIZE</button>
                 </div>
             </section>
             <section id="race-select" class="view" tabindex="-1"><div class="grid" id="race-grid"></div></section>
             <section id="viewer" class="view" tabindex="-1">
-                <div id="thumb-bar" style="height:90px; display:flex; gap:12px; padding:12px; overflow-x:auto;"></div>
-                <div class="stage"><img id="char-portrait" src="" alt="Portrait"></div>
+                <div id="viewer-status" class="loader-ui" role="status">DECRYPTING ARCHIVE...</div>
+                <div class="stage"><img id="char-portrait" src="" alt=""></div>
                 <div class="sheet"><h2 id="char-name" style="color:var(--blush);"></h2><p id="char-desc" style="margin-top:10px; line-height:1.6;"></p></div>
             </section>
         </main>
@@ -91,8 +92,7 @@
     <script>
         "use strict";
 
-        /**
-         * REACTIVE PUB/SUB STORE
+        /** * STATE: REACTIVE PERSISTENT ENGINE
          */
         class Store {
             constructor(initial) {
@@ -102,9 +102,7 @@
                         if (obj[prop] === val) return true;
                         obj[prop] = val;
                         queueMicrotask(() => {
-                            this.subs[prop]?.forEach(fn => {
-                                try { fn(val); } catch (e) { console.error(`Subscriber Error [${prop}]:`, e); }
-                            });
+                            this.subs[prop]?.forEach(fn => { try { fn(val); } catch (e) { console.error(e); }});
                         });
                         return true;
                     }
@@ -117,163 +115,172 @@
             }
         }
 
-        const GStore = new Store({ view: 'welcome', sidebar: false, theme: 'night', online: true });
+        const GStore = new Store({ 
+            view: 'welcome', 
+            sidebar: false, 
+            theme: localStorage.getItem('misty-theme') || 'night' 
+        });
 
-        /**
-         * VANGUARD APP CONTROLLER
-         */
-        const App = {
-            lastFocused: null,
+        const Registry = {
             races: [
                 { id: 'human', label: 'HUMAN', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png' },
                 { id: 'elf', label: 'ELF', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg' }
             ],
+            async getCharacter(id) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        const data = { 'human': { name: 'Atelier', desc: 'Botanical Alchemist of Ghoom Pahar Forest.', portrait: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png' }};
+                        resolve(data[id] || null);
+                    }, 600);
+                });
+            }
+        };
 
+        const App = {
+            previousFocus: null,
             boot() {
-                try {
-                    this.bindStore();
-                    this.initUI();
-                    this.initRouter();
-                    this.initA11y();
-                    this.initHeartbeat();
-                    Fog.start();
-                    document.body.style.opacity = '1';
-                } catch (e) { console.error("Archive Critical Error:", e); }
+                this.bindStore();
+                this.initUI();
+                this.initRouter();
+                Fog.start();
+                document.body.style.opacity = '1';
             },
 
             bindStore() {
                 GStore.subscribe('sidebar', (open) => {
                     const sb = document.getElementById('sidebar'), app = document.getElementById('app');
                     sb.classList.toggle('open', open);
+                    app.classList.toggle('modal-open', open);
                     document.getElementById('sidebar-overlay').style.display = open ? 'block' : 'none';
-                    if ('inert' in app) app.inert = open; else app.setAttribute('aria-hidden', open);
                     
-                    if (open) { this.lastFocused = document.activeElement; sb.querySelector('button').focus(); }
-                    else { this.lastFocused?.focus(); }
+                    if (open) {
+                        this.previousFocus = document.activeElement;
+                        this.trapFocus(sb);
+                    } else if (this.previousFocus) {
+                        this.previousFocus.focus();
+                    }
+                    
+                    if ('inert' in app) app.inert = open;
+                    else app.setAttribute('aria-hidden', open);
                 });
 
                 GStore.subscribe('view', (id) => {
-                    if (id === 'viewer' && !document.getElementById('char-name').textContent) {
-                        GStore.state.view = 'race-select'; return;
-                    }
                     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                     const target = document.getElementById(id);
-                    target.classList.add('active');
-                    target.focus();
-                    document.getElementById('header-title').textContent = id.toUpperCase().replace('-', ' ');
+                    if (target) { target.classList.add('active'); target.focus(); }
+                    document.getElementById('header-title').textContent = id.toUpperCase();
                 });
 
-                GStore.subscribe('theme', (t) => document.body.classList.toggle('light-mode', t === 'light'));
+                GStore.subscribe('theme', (t) => {
+                    document.body.classList.toggle('light-mode', t === 'light');
+                    localStorage.setItem('misty-theme', t);
+                });
             },
 
             initUI() {
                 const grid = document.getElementById('race-grid');
-                this.races.forEach(r => {
+                Registry.races.forEach(r => {
                     const card = document.createElement('button');
                     card.className = 'card skeleton';
-                    card.innerHTML = `<img src="${r.img}" alt="" loading="lazy" decoding="async"><div class="card-label">${r.label}</div>`;
+                    card.innerHTML = `<img src="${r.img}" alt=""><div class="card-label">${r.label}</div>`;
                     const img = card.querySelector('img');
-                    const timeout = setTimeout(() => { if (!img.complete) card.classList.remove('skeleton'); }, 5000);
-                    img.addEventListener('load', () => { clearTimeout(timeout); card.classList.remove('skeleton'); img.classList.add('loaded'); });
-                    img.addEventListener('error', () => { clearTimeout(timeout); card.classList.remove('skeleton'); card.style.background = "#4a5568"; });
-                    card.addEventListener('click', () => this.loadRace(r.id));
+                    img.addEventListener('load', () => { card.classList.remove('skeleton'); img.classList.add('loaded'); }, {once: true});
+                    card.onclick = () => this.loadRace(r.id);
                     grid.appendChild(card);
                 });
 
-                document.getElementById('menu-btn').addEventListener('click', () => GStore.state.sidebar = true);
-                document.getElementById('close-sidebar').addEventListener('click', () => GStore.state.sidebar = false);
-                document.getElementById('sidebar-overlay').addEventListener('click', () => GStore.state.sidebar = false);
-                document.getElementById('theme-btn').addEventListener('click', () => {
-                    GStore.state.theme = GStore.state.theme === 'night' ? 'light' : 'night';
-                });
+                document.getElementById('menu-btn').onclick = () => GStore.state.sidebar = true;
+                document.getElementById('close-sidebar').onclick = () => GStore.state.sidebar = false;
+                document.getElementById('sidebar-overlay').onclick = () => GStore.state.sidebar = false;
+                document.getElementById('theme-btn').onclick = () => GStore.state.theme = GStore.state.theme === 'night' ? 'light' : 'night';
                 
                 document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const target = e.currentTarget.dataset.target;
-                        if (GStore.state.view !== target) {
-                            GStore.state.view = target;
-                            history.pushState({view: target}, "", `#${target}`);
-                        }
-                    });
+                    btn.onclick = (e) => this.navigate(e.currentTarget.dataset.target);
                 });
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && GStore.state.sidebar) GStore.state.sidebar = false;
+                });
+
+                window.addEventListener('resize', () => Fog.resize());
             },
 
-            initA11y() {
-                const sb = document.getElementById('sidebar');
-                sb.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') GStore.state.sidebar = false;
-                    if (e.key === 'Tab') {
-                        const focusable = sb.querySelectorAll('button');
-                        const first = focusable[0], last = focusable[focusable.length - 1];
-                        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-                        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-                    }
-                });
-            },
-
-            initHeartbeat() {
-                let controller, interval = 10000;
-                const check = async () => {
-                    if (controller) controller.abort();
-                    controller = new AbortController();
-                    const t = setTimeout(() => controller.abort(), 4000);
-                    try {
-                        const res = await fetch('https://raw.githubusercontent.com/kozySleep-web/Myori-site/main/assets/ui/shigure-ui-transparent.gif', { method: 'HEAD', cache: 'no-store', signal: controller.signal });
-                        GStore.state.online = res.ok;
-                    } catch { GStore.state.online = false; }
-                    finally { clearTimeout(t); }
-                    
-                    document.getElementById('net-warn').style.display = GStore.state.online ? 'none' : 'block';
-                    interval = GStore.state.online ? 10000 : Math.min(interval * 1.5, 60000);
-                    setTimeout(check, interval);
+            trapFocus(el) {
+                const focusable = el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                const first = focusable[0], last = focusable[focusable.length - 1];
+                el.onkeydown = (e) => {
+                    if (e.key !== 'Tab') return;
+                    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+                    else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
                 };
-                check();
+                first.focus();
+            },
+
+            navigate(target) {
+                if (GStore.state.view !== target) {
+                    GStore.state.view = target;
+                    history.pushState({view: target}, "", `#${target}`);
+                    GStore.state.sidebar = false;
+                }
             },
 
             initRouter() {
-                const h = window.location.hash.replace('#', '');
-                if (h && document.getElementById(h)) GStore.state.view = h;
+                const hash = window.location.hash.replace('#', '');
+                if (hash && document.getElementById(hash)) GStore.state.view = hash;
                 window.onpopstate = (e) => GStore.state.view = e.state?.view || 'welcome';
             },
 
-            loadRace(id) {
-                if (id === 'human') {
-                    const p = document.getElementById('char-portrait');
-                    p.classList.remove('active');
-                    document.getElementById('char-name').textContent = "Atelier";
-                    document.getElementById('char-desc').textContent = "Botanical Alchemist of the Ghoom Mist.";
-                    p.src = "https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png";
-                    p.onload = () => p.classList.add('active');
-                    GStore.state.view = 'viewer';
-                } else { alert("Data Classified."); }
+            async loadRace(id) {
+                const status = document.getElementById('viewer-status');
+                const portrait = document.getElementById('char-portrait');
+                status.style.display = 'flex';
+                portrait.classList.remove('active');
+                
+                this.navigate('viewer');
+                const data = await Registry.getCharacter(id);
+                
+                if (!data) { status.textContent = "ENTRY ENCRYPTED"; return; }
+                
+                const tempImg = new Image();
+                tempImg.src = data.portrait;
+                await tempImg.decode().catch(() => {});
+                
+                status.style.display = 'none';
+                document.getElementById('char-name').textContent = data.name;
+                document.getElementById('char-desc').textContent = data.desc;
+                portrait.src = data.portrait;
+                portrait.classList.add('active');
             }
         };
 
         const Fog = {
-            cvs: document.getElementById('fog-canvas'), ctx: null, rafId: null, pts: [], theme: 'night',
+            cvs: document.getElementById('fog-canvas'), ctx: null, rafId: null, pts: [], lastTime: 0, active: true,
             start() {
-                this.ctx = this.cvs.getContext('2d'); this.resize();
-                window.addEventListener('resize', () => this.resize());
-                this.pts = Array.from({length: 40}, () => ({ x: Math.random(), y: Math.random(), v: 0.001 + Math.random() * 0.002 }));
-                GStore.subscribe('theme', (t) => this.theme = t);
-                document.addEventListener('visibilitychange', () => this.manage());
-                this.loop();
+                this.ctx = this.cvs.getContext('2d');
+                this.resize();
+                this.pts = Array.from({length: 30}, () => ({ x: Math.random(), y: Math.random(), v: 0.0005 + Math.random() * 0.001 }));
+                document.addEventListener('visibilitychange', () => { this.active = !document.hidden; if(this.active) this.loop(performance.now()); });
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.loop(performance.now());
             },
             resize() {
                 const dpr = window.devicePixelRatio || 1;
-                this.cvs.width = window.innerWidth * dpr; this.cvs.height = window.innerHeight * dpr;
+                this.cvs.width = window.innerWidth * dpr;
+                this.cvs.height = window.innerHeight * dpr;
                 this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             },
-            manage() { if (document.hidden) cancelAnimationFrame(this.rafId); else this.loop(); },
-            loop() {
-                if (this.rafId) cancelAnimationFrame(this.rafId);
+            loop(time) {
+                if (!this.active) { cancelAnimationFrame(this.rafId); return; }
+                this.rafId = requestAnimationFrame((t) => this.loop(t));
+                
+                if (time - this.lastTime < 30) return;
+                this.lastTime = time;
+                
                 this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                this.ctx.fillStyle = this.theme === 'night' ? '#ffffff12' : '#00000012';
+                this.ctx.fillStyle = GStore.state.theme === 'night' ? '#ffffff08' : '#00000005';
                 this.pts.forEach(p => {
-                    p.y += p.v; if (p.y > 1) p.y = -0.05;
-                    this.ctx.fillRect(p.x * window.innerWidth, p.y * window.innerHeight, 1.5, 12);
+                    p.y += p.v; if (p.y > 1.1) p.y = -0.1;
+                    this.ctx.fillRect(p.x * window.innerWidth, p.y * window.innerHeight, 2, 20);
                 });
-                this.rafId = requestAnimationFrame(() => this.loop());
             }
         };
 
