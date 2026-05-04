@@ -3,278 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Misty Archive - A professional character database with atmospheric Ghoom aesthetics.">
-    <title>Misty Archive | Production v3.0</title>
-    
-    <link rel="preconnect" href="https://raw.githubusercontent.com">
-    
+    <meta name="description" content="Misty Archive - Final Engineered Vanguard Distribution.">
+    <title>Misty Archive | Vanguard Final</title>
     <style>
-        /* Embedded Critical CSS for Performance */
         :root {
-            --blush: #f8bbd0; --sidebar-w: 280px; --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --bg: #1a1a2e; --surface: #16213e; --text: #ecf0f1; --accent: #d7ccc8; --header: #0f3460;
+            --blush: #f8bbd0; --sidebar-w: 280px; --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --accent: #94a3b8; --header: #0f172a;
+            --skeleton: #2d3748;
         }
         body.light-mode {
-            --bg: #f0f2f5; --surface: #ffffff; --text: #3e2723; --accent: #6d4c41; --header: #ffffff;
+            --bg: #f8fafc; --surface: #ffffff; --text: #1e293b; --accent: #64748b; --header: #ffffff;
+            --skeleton: #e2e8f0;
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg); color: var(--text); overflow: hidden; height: 100vh;
-        }
-        #app { display: grid; height: 100%; grid-template-rows: auto 1fr; }
-        .view { display: none; height: 100%; overflow-y: auto; position: relative; }
-        .view.active { display: flex; flex-direction: column; animation: fadeIn var(--transition); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
-        /* Professional Navigation */
-        .app-header { 
-            height: 64px; background: var(--header); display: flex; align-items: center; 
-            padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.1); z-index: 1000;
-        }
-        .btn-icon { background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.2s; }
-        .btn-icon:hover { background: rgba(128,128,128,0.1); }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: background 0.3s; opacity: 0; }
 
-        /* Bento Grid System */
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
-        .race-card { 
-            aspect-ratio: 1/1.2; border-radius: 24px; overflow: hidden; position: relative; 
-            cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease;
-        }
-        .race-card:hover { transform: translateY(-5px); }
-        .race-card img { width: 100%; height: 100%; object-fit: cover; }
-        .race-label { position: absolute; bottom: 0; width: 100%; padding: 16px; background: rgba(0,0,0,0.6); color: #fff; text-align: center; font-weight: 600; backdrop-filter: blur(8px); }
+        #app { display: grid; height: 100%; grid-template-rows: auto 1fr; position: relative; z-index: 10; }
+        #app[inert], #app[aria-hidden="true"] { filter: grayscale(0.5) blur(2px); pointer-events: none; }
 
-        /* Stage & Bottom Sheet */
-        .stage { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; }
-        .char-portrait { max-height: 85%; width: auto; object-fit: contain; z-index: 2; transition: opacity 0.5s; }
-        .bottom-sheet { 
-            background: var(--surface); border-radius: 32px 32px 0 0; padding: 24px; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.2); z-index: 10; border-top: 4px solid var(--blush);
-        }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view { display: none; height: 100%; overflow-y: auto; opacity: 0; transform: translateY(10px); outline: none; }
+        .view.active { display: flex; flex-direction: column; opacity: 1; transform: translateY(0); transition: 0.4s ease; }
         
-        /* Particle Canvas */
-        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-        
-        /* Sidebar */
-        .sidebar { 
-            position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%;
-            background: var(--surface); z-index: 2000; transition: var(--transition); padding: 40px 24px;
-            box-shadow: 20px 0 60px rgba(0,0,0,0.3);
+        .skeleton { background: var(--skeleton); position: relative; overflow: hidden; border-radius: 20px; }
+        .skeleton::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shimmer 1.5s infinite; transform: translateX(-100%);
         }
-        .sidebar.open { transform: translateX(var(--sidebar-w)); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; backdrop-filter: blur(4px); }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+        .app-header { height: 64px; background: var(--header); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(128,128,128,0.1); z-index: 1000; }
+        .sidebar { position: fixed; left: calc(-1 * var(--sidebar-w)); top: 0; width: var(--sidebar-w); height: 100%; background: var(--surface); z-index: 2000; transition: var(--transition); padding: 40px 24px; visibility: hidden; }
+        .sidebar.open { transform: translateX(var(--sidebar-w)); visibility: visible; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; backdrop-filter: blur(8px); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .card { aspect-ratio: 1/1.2; overflow: hidden; position: relative; border: 1px solid rgba(128,128,128,0.2); transition: transform 0.3s; background: #000; border-radius: 20px; }
+        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
+        .card img.loaded { opacity: 1; }
+        .card-label { position: absolute; bottom: 0; width: 100%; padding: 12px; background: rgba(0,0,0,0.8); color: #fff; text-align: center; font-weight: 600; font-size: 0.8rem; }
+
+        canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        #net-warn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #e53e3e; color: #fff; padding: 10px 24px; border-radius: 50px; display: none; z-index: 9999; font-weight: bold; }
+        
+        button { cursor: pointer; border: none; background: none; color: inherit; font: inherit; outline-offset: 4px; }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <canvas id="particle-canvas"></canvas>
+    <canvas id="fog-canvas"></canvas>
     <div id="sidebar-overlay" class="overlay"></div>
+    <div id="net-warn" role="alert">Archive Connectivity Lost</div>
     
-    <nav class="sidebar" id="sidebar">
-        <h2 style="color: var(--blush); letter-spacing: 2px;">ARCHIVE</h2>
-        <div style="margin-top: 32px;">
-            <button class="theme-switch" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--accent); background: none; color: var(--text); cursor: pointer;" onclick="toggleTheme()">🌓 Toggle Theme</button>
-        </div>
-        <ul style="list-style: none; padding: 0; margin-top: 40px;">
-            <li onclick="Router.nav('welcome')" style="padding: 16px 0; border-bottom: 1px solid rgba(128,128,128,0.2); cursor: pointer;">🏠 Home</li>
-            <li onclick="Router.nav('race-select')" style="padding: 16px 0; border-bottom: 1px solid rgba(128,128,128,0.2); cursor: pointer;">👤 Database</li>
-        </ul>
+    <nav class="sidebar" id="sidebar" role="dialog" aria-modal="true" aria-label="Menu">
+        <h2 style="color: var(--blush); margin-bottom: 30px;">ARCHIVE</h2>
+        <button id="theme-btn" style="width: 100%; padding: 12px; border: 1px solid var(--accent); border-radius: 12px; margin-bottom: 20px;">🌓 Toggle Theme</button>
+        <button class="nav-btn" data-target="welcome" style="display:block; width:100%; text-align:left; padding:15px 0;">🏠 Home</button>
+        <button class="nav-btn" data-target="race-select" style="display:block; width:100%; text-align:left; padding:15px 0;">👤 Database</button>
+        <button id="close-sidebar" style="margin-top: 40px; color: var(--accent);">Exit Menu</button>
     </nav>
-
-    <div id="loader" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; justify-content:center; align-items:center;">
-        <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/ui/shigure-ui-transparent.gif" alt="Loading..." style="width:200px;">
-    </div>
 
     <div id="app">
         <header class="app-header">
-            <button class="btn-icon" onclick="toggleSidebar()">☰</button>
-            <div id="header-title" style="flex: 1; text-align: center; font-weight: bold; letter-spacing: 1px;">MISTY ARCHIVE</div>
-            <div style="width: 40px;"></div>
+            <button id="menu-btn" aria-label="Open Menu" style="font-size: 24px;">☰</button>
+            <h1 id="header-title" style="flex:1; text-align:center; font-size:0.9rem; letter-spacing:2px; text-transform: uppercase;">MISTY ARCHIVE</h1>
         </header>
 
-        <main style="position: relative; overflow: hidden;">
-            <section id="welcome" class="view active">
-                <div style="position: absolute; inset: 0; background: url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter: brightness(0.4);"></div>
-                <div style="margin: auto; z-index: 10; text-align: center; background: rgba(255,255,255,0.05); padding: 40px; border-radius: 32px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); width: 90%; max-width: 400px;">
-                    <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" style="width: 100%; border-radius: 16px; mix-blend-mode: screen; margin-bottom: 24px;">
-                    <h1 style="color: #fff; margin: 0 0 24px 0; letter-spacing: 4px;">MISTY ARCHIVE</h1>
-                    <button onclick="Router.nav('race-select')" style="width: 100%; padding: 16px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; background: #fff; color: #000;">INITIALIZE</button>
+        <main id="main-content" role="main">
+            <section id="welcome" class="view active" tabindex="-1">
+                <div style="position:absolute; inset:0; background:url('https://w.wallhaven.cc/full/ox/wallhaven-ox6589.jpg') center/cover; filter:brightness(0.3);"></div>
+                <div style="margin:auto; z-index:10; text-align:center; padding:40px; background:rgba(0,0,0,0.4); border-radius:32px; backdrop-filter:blur(20px); width:90%; max-width:400px;">
+                    <img src="https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/welcome_box.gif" style="width:100%; mix-blend-mode:screen;" alt="Animation">
+                    <button class="nav-btn" data-target="race-select" style="width:100%; margin-top:20px; padding:18px; border-radius:50px; background:#fff; color:#000; font-weight:800;">DECRYPT DATA</button>
                 </div>
             </section>
-
-            <section id="race-select" class="view">
-                <div class="bento-grid" id="race-grid">
-                    </div>
-            </section>
-
-            <section id="viewer" class="view">
-                <div id="thumb-bar" style="height: 80px; display: flex; gap: 16px; padding: 12px; overflow-x: auto; background: var(--header);"></div>
-                <div class="stage">
-                    <img id="char-portrait" class="char-portrait" src="" style="opacity: 0;">
-                </div>
-                <div class="bottom-sheet">
-                    <h2 id="char-name" style="margin: 0; font-size: 1.8rem;">Archive Entry</h2>
-                    <p id="char-desc" style="margin: 12px 0 0 0; line-height: 1.6; opacity: 0.8;">Seeking data...</p>
-                </div>
+            <section id="race-select" class="view" tabindex="-1"><div class="grid" id="race-grid"></div></section>
+            <section id="viewer" class="view" tabindex="-1">
+                <div id="thumb-bar" style="height:90px; display:flex; gap:12px; padding:12px; overflow-x:auto;"></div>
+                <div class="stage"><img id="char-portrait" src="" alt="Portrait"></div>
+                <div class="sheet"><h2 id="char-name" style="color:var(--blush);"></h2><p id="char-desc" style="margin-top:10px; line-height:1.6;"></p></div>
             </section>
         </main>
     </div>
 
     <script>
-        /**
-         * PHASE 9: SCALABILITY - CENTRALIZED DATABASE
-         */
-        const DB = {
-            races: [
-                { id: 'human', label: 'HUMAN', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png' },
-                { id: 'elf', label: 'ELF', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg' },
-                { id: 'beastmen', label: 'BEASTMEN', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/beastmen.jpg' },
-                { id: 'vampire', label: 'VAMPIRE', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/vampire-girl-box.jpg' }
-            ],
-            characters: [
-                {
-                    id: 'atelier',
-                    race: 'human',
-                    name: 'Atelier',
-                    desc: 'A gentle-hearted human girl from the Ghoom hills. Expert in botanical alchemy.',
-                    portrait: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png',
-                    icon: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-icon.png'
-                }
-            ]
-        };
+        "use strict";
 
         /**
-         * PHASE 4: NAVIGATION & STATE MANAGEMENT
+         * REACTIVE PUB/SUB STORE
          */
-        const Router = {
-            nav(viewId) {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                const target = document.getElementById(viewId);
-                if(target) target.classList.add('active');
-                
-                // Update Header Title
-                const titles = { 'welcome': 'HOME', 'race-select': 'DATABASE', 'viewer': 'ARCHIVE' };
-                document.getElementById('header-title').innerText = titles[viewId] || 'MISTY ARCHIVE';
-            }
-        };
-
-        /**
-         * PHASE 5: PERFORMANCE - CANVAS PARTICLE ENGINE
-         */
-        const Particles = {
-            canvas: document.getElementById('particle-canvas'),
-            ctx: null,
-            items: [],
-            init() {
-                this.ctx = this.canvas.getContext('2d');
-                this.resize();
-                window.addEventListener('resize', () => this.resize());
-                for(let i=0; i<60; i++) this.items.push(this.create('rain'));
-                for(let i=0; i<20; i++) this.items.push(this.create('petal'));
-                this.animate();
-            },
-            resize() {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
-            },
-            create(type) {
-                return {
-                    type,
-                    x: Math.random() * this.canvas.width,
-                    y: Math.random() * this.canvas.height,
-                    speed: type === 'rain' ? 10 + Math.random() * 10 : 2 + Math.random() * 3,
-                    size: type === 'rain' ? 2 : 5 + Math.random() * 5,
-                    opacity: 0.2 + Math.random() * 0.5
-                };
-            },
-            animate() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.items.forEach(p => {
-                    p.y += p.speed;
-                    if(p.type === 'petal') p.x += Math.sin(p.y / 20);
-                    if(p.y > this.canvas.height) { p.y = -20; p.x = Math.random() * this.canvas.width; }
-                    
-                    this.ctx.globalAlpha = p.opacity;
-                    this.ctx.fillStyle = p.type === 'rain' ? '#fff' : '#f8bbd0';
-                    if(p.type === 'rain') this.ctx.fillRect(p.x, p.y, 1, 15);
-                    else {
-                        this.ctx.beginPath();
-                        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        this.ctx.fill();
+        class Store {
+            constructor(initial) {
+                this.subs = {};
+                this.state = new Proxy(initial, {
+                    set: (obj, prop, val) => {
+                        if (obj[prop] === val) return true;
+                        obj[prop] = val;
+                        queueMicrotask(() => {
+                            this.subs[prop]?.forEach(fn => {
+                                try { fn(val); } catch (e) { console.error(`Subscriber Error [${prop}]:`, e); }
+                            });
+                        });
+                        return true;
                     }
                 });
-                requestAnimationFrame(() => this.animate());
+            }
+            subscribe(prop, fn) {
+                if (!this.subs[prop]) this.subs[prop] = [];
+                this.subs[prop].push(fn);
+                return () => this.subs[prop] = this.subs[prop].filter(f => f !== fn);
+            }
+        }
+
+        const GStore = new Store({ view: 'welcome', sidebar: false, theme: 'night', online: true });
+
+        /**
+         * VANGUARD APP CONTROLLER
+         */
+        const App = {
+            lastFocused: null,
+            races: [
+                { id: 'human', label: 'HUMAN', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/human-girl.png' },
+                { id: 'elf', label: 'ELF', img: 'https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/backgrounds/elf-girl-box-image.jpg' }
+            ],
+
+            boot() {
+                try {
+                    this.bindStore();
+                    this.initUI();
+                    this.initRouter();
+                    this.initA11y();
+                    this.initHeartbeat();
+                    Fog.start();
+                    document.body.style.opacity = '1';
+                } catch (e) { console.error("Archive Critical Error:", e); }
+            },
+
+            bindStore() {
+                GStore.subscribe('sidebar', (open) => {
+                    const sb = document.getElementById('sidebar'), app = document.getElementById('app');
+                    sb.classList.toggle('open', open);
+                    document.getElementById('sidebar-overlay').style.display = open ? 'block' : 'none';
+                    if ('inert' in app) app.inert = open; else app.setAttribute('aria-hidden', open);
+                    
+                    if (open) { this.lastFocused = document.activeElement; sb.querySelector('button').focus(); }
+                    else { this.lastFocused?.focus(); }
+                });
+
+                GStore.subscribe('view', (id) => {
+                    if (id === 'viewer' && !document.getElementById('char-name').textContent) {
+                        GStore.state.view = 'race-select'; return;
+                    }
+                    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                    const target = document.getElementById(id);
+                    target.classList.add('active');
+                    target.focus();
+                    document.getElementById('header-title').textContent = id.toUpperCase().replace('-', ' ');
+                });
+
+                GStore.subscribe('theme', (t) => document.body.classList.toggle('light-mode', t === 'light'));
+            },
+
+            initUI() {
+                const grid = document.getElementById('race-grid');
+                this.races.forEach(r => {
+                    const card = document.createElement('button');
+                    card.className = 'card skeleton';
+                    card.innerHTML = `<img src="${r.img}" alt="" loading="lazy" decoding="async"><div class="card-label">${r.label}</div>`;
+                    const img = card.querySelector('img');
+                    const timeout = setTimeout(() => { if (!img.complete) card.classList.remove('skeleton'); }, 5000);
+                    img.addEventListener('load', () => { clearTimeout(timeout); card.classList.remove('skeleton'); img.classList.add('loaded'); });
+                    img.addEventListener('error', () => { clearTimeout(timeout); card.classList.remove('skeleton'); card.style.background = "#4a5568"; });
+                    card.addEventListener('click', () => this.loadRace(r.id));
+                    grid.appendChild(card);
+                });
+
+                document.getElementById('menu-btn').addEventListener('click', () => GStore.state.sidebar = true);
+                document.getElementById('close-sidebar').addEventListener('click', () => GStore.state.sidebar = false);
+                document.getElementById('sidebar-overlay').addEventListener('click', () => GStore.state.sidebar = false);
+                document.getElementById('theme-btn').addEventListener('click', () => {
+                    GStore.state.theme = GStore.state.theme === 'night' ? 'light' : 'night';
+                });
+                
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const target = e.currentTarget.dataset.target;
+                        if (GStore.state.view !== target) {
+                            GStore.state.view = target;
+                            history.pushState({view: target}, "", `#${target}`);
+                        }
+                    });
+                });
+            },
+
+            initA11y() {
+                const sb = document.getElementById('sidebar');
+                sb.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') GStore.state.sidebar = false;
+                    if (e.key === 'Tab') {
+                        const focusable = sb.querySelectorAll('button');
+                        const first = focusable[0], last = focusable[focusable.length - 1];
+                        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                    }
+                });
+            },
+
+            initHeartbeat() {
+                let controller, interval = 10000;
+                const check = async () => {
+                    if (controller) controller.abort();
+                    controller = new AbortController();
+                    const t = setTimeout(() => controller.abort(), 4000);
+                    try {
+                        const res = await fetch('https://raw.githubusercontent.com/kozySleep-web/Myori-site/main/assets/ui/shigure-ui-transparent.gif', { method: 'HEAD', cache: 'no-store', signal: controller.signal });
+                        GStore.state.online = res.ok;
+                    } catch { GStore.state.online = false; }
+                    finally { clearTimeout(t); }
+                    
+                    document.getElementById('net-warn').style.display = GStore.state.online ? 'none' : 'block';
+                    interval = GStore.state.online ? 10000 : Math.min(interval * 1.5, 60000);
+                    setTimeout(check, interval);
+                };
+                check();
+            },
+
+            initRouter() {
+                const h = window.location.hash.replace('#', '');
+                if (h && document.getElementById(h)) GStore.state.view = h;
+                window.onpopstate = (e) => GStore.state.view = e.state?.view || 'welcome';
+            },
+
+            loadRace(id) {
+                if (id === 'human') {
+                    const p = document.getElementById('char-portrait');
+                    p.classList.remove('active');
+                    document.getElementById('char-name').textContent = "Atelier";
+                    document.getElementById('char-desc').textContent = "Botanical Alchemist of the Ghoom Mist.";
+                    p.src = "https://raw.githubusercontent.com/kozySleep-web/Myori-site/refs/heads/main/assets/atelier-human-girl/atelier-human-girl-main.png";
+                    p.onload = () => p.classList.add('active');
+                    GStore.state.view = 'viewer';
+                } else { alert("Data Classified."); }
             }
         };
 
-        /**
-         * PHASE 8: CONTENT & UX FLOW
-         */
-        function initApp() {
-            const grid = document.getElementById('race-grid');
-            DB.races.forEach(race => {
-                const card = document.createElement('div');
-                card.className = 'race-card';
-                card.innerHTML = `<img src="${race.img}" loading="lazy"><div class="race-label">${race.label}</div>`;
-                card.onclick = () => loadRace(race.id);
-                grid.appendChild(card);
-            });
-
-            Particles.init();
-            
-            // Handle Loader
-            window.addEventListener('load', () => {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-            });
-        }
-
-        function loadRace(raceId) {
-            const bar = document.getElementById('thumb-bar');
-            bar.innerHTML = "";
-            const chars = DB.characters.filter(c => c.race === raceId);
-            
-            if(chars.length === 0) {
-                alert("Data for this race is currently classified.");
-                return;
+        const Fog = {
+            cvs: document.getElementById('fog-canvas'), ctx: null, rafId: null, pts: [], theme: 'night',
+            start() {
+                this.ctx = this.cvs.getContext('2d'); this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.pts = Array.from({length: 40}, () => ({ x: Math.random(), y: Math.random(), v: 0.001 + Math.random() * 0.002 }));
+                GStore.subscribe('theme', (t) => this.theme = t);
+                document.addEventListener('visibilitychange', () => this.manage());
+                this.loop();
+            },
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.cvs.width = window.innerWidth * dpr; this.cvs.height = window.innerHeight * dpr;
+                this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            },
+            manage() { if (document.hidden) cancelAnimationFrame(this.rafId); else this.loop(); },
+            loop() {
+                if (this.rafId) cancelAnimationFrame(this.rafId);
+                this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                this.ctx.fillStyle = this.theme === 'night' ? '#ffffff12' : '#00000012';
+                this.pts.forEach(p => {
+                    p.y += p.v; if (p.y > 1) p.y = -0.05;
+                    this.ctx.fillRect(p.x * window.innerWidth, p.y * window.innerHeight, 1.5, 12);
+                });
+                this.rafId = requestAnimationFrame(() => this.loop());
             }
+        };
 
-            chars.forEach(c => {
-                const img = document.createElement('img');
-                img.src = c.icon;
-                img.style = "height: 100%; border-radius: 50%; border: 2px solid var(--blush); cursor: pointer;";
-                img.onclick = () => renderCharacter(c);
-                bar.appendChild(img);
-            });
-            Router.nav('viewer');
-        }
-
-        function renderCharacter(char) {
-            const portrait = document.getElementById('char-portrait');
-            portrait.style.opacity = '0';
-            setTimeout(() => {
-                portrait.src = char.portrait;
-                portrait.onload = () => portrait.style.opacity = '1';
-                document.getElementById('char-name').innerText = char.name;
-                document.getElementById('char-desc').innerText = char.desc;
-            }, 200);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            const overlay = document.getElementById('sidebar-overlay');
-            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-        }
-
-        initApp();
+        App.boot();
     </script>
 </body>
 </html>
